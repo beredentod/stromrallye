@@ -3,7 +3,7 @@ project(stromrallye)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(stromrallye files/main.cpp)
+add_executable(stromrallye files/main.cpp files/graph.cpp files/backtracking.cpp files/generate.cpp)
 target_link_libraries(stromrallye)
 
 install(TARGETS stromrallye DESTINATION bin)

@@ -1,0 +1,483 @@
+\documentclass[a4paper,10pt,ngerman]{scrartcl}
+\usepackage{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage[a4paper,margin=2.5cm,footskip=0.5cm]{geometry}
+
+% Die nächsten drei Felder bitte anpassen:
+\newcommand{\Aufgabe}{Aufgabe 1: Stromrallye} % Aufgabennummer und Aufgabennamen angeben
+\newcommand{\TeilnahmeId}{52586}       % Teilnahme-Id angeben
+\newcommand{\Namen}{Michal Boron} % Namen der Bearbeiter/-innen dieser Aufgabe angeben
+ 
+% Kopf- und Fußzeilen
+\usepackage{scrlayer-scrpage, lastpage}
+\setkomafont{pageheadfoot}{\large\textrm}
+\lohead{\Aufgabe}
+\rohead{Teilnahme-Id: \TeilnahmeId}
+\cfoot*{\thepage{}/\pageref{LastPage}}
+
+% Position des Titels
+\usepackage{titling}
+\setlength{\droptitle}{-1.0cm}
+\usepackage{seqsplit}
+\usepackage{verbatim}
+
+% Für mathematische Befehle und Symbole
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{cite}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=false,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+% Für Bilder
+\usepackage{graphicx}
+\usepackage[all]{xy}
+\usepackage{svg}
+\graphicspath{ {./images/} }
+
+% Für Algorithmen
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{gensymb}
+
+% Für Quelltext
+\usepackage{listings}
+\usepackage{color}
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\lstset{
+  keywordstyle=\color{blue},commentstyle=\color{mygreen},
+  stringstyle=\color{mymauve},rulecolor=\color{black},
+  basicstyle=\footnotesize\ttfamily,numberstyle=\tiny\color{mygray},
+  captionpos=b, % sets the caption-position to bottom
+  keepspaces=true, % keeps spaces in text
+  numbers=left, numbersep=5pt, showspaces=false,showstringspaces=true,
+  showtabs=false, stepnumber=2, tabsize=2, title=\lstname
+}
+
+% Diese beiden Pakete müssen zuletzt geladen werden
+%\usepackage{hyperref} % Anklickbare Links im Dokument
+\usepackage{cleveref}
+\newtheorem{lemma}{Beobachtung}
+\usepackage[backgroundcolor=lightgray]{todonotes}
+\newcommand{\TODO}[1]{\todo[inline]{#1}}
+
+% Daten für die Titelseite
+\title{\textbf{\Huge\Aufgabe}}
+\author{\LARGE Teilnahme-Id: \LARGE \TeilnahmeId \\\\
+	    \LARGE Bearbeiter dieser Aufgabe: \\ 
+	    \LARGE \Namen\\\\}
+\date{\LARGE April 2020}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\vspace{0.5cm}
+
+\section{Lösungsidee}
+\subsection{Definitionen}
+
+Als eine \textit{Batterie} bezeichne ich ein Objekt mit zwei Koordinaten $x$, $y$ und einer Ladung $c$.
+Unter einer \textit{Ladung} versteht man eine nichtnegative, rationale Zahl.
+Bei Koordinaten sowie bei einer Ladung konzentrieren wir uns auf nichtnegative, ganze Zahlen.\\
+
+Gegeben seien eine zweidimensionale, quadratische Matrix $M$ mit der Seitenlänge $l$, eine Menge von Batterien $B$
+und eine Startbatterie $s$.\\
+Jeweilige Batterie $b_i$ aus der Menge $B$ besitzt zwei Koordinaten $x_i \leqslant l$ und $y_i \leqslant l$ und eine Ladung $c_i$.\\
+In der Matrix gibt es \textit{Felder}. Jedes Feld ist eine Kombination aus einer $x$-- und einer $y$--Koordinate.
+Das bedeutet, dass jede Batterie auch auf einem Feld liegt.\\
+
+Nach der Aufgabenstellung dürfen wir einen \textit{Schritt} zwischen zwei Feldern machen. Dieser Schritt ist 
+ein Übergang von einem Feld zu einem anderen. Nach der Aufgabenstellung dürfen wir Schritte nach links, rechts oben und unten machen.
+Angenommen, stehen wir auf einem Feld $f$ mit Koordinaten ($x_f,y_f$). Wir dürfen einen Schritt
+\begin{itemize}
+\item nach links zum Feld mit einer $x$--Koordinate um 1 kleiner als $x_f$, also zum Feld ($x_{f-1},y_f$),
+\item nach rechts zum Feld mit einer $x$--Koordinate um 1 größer als $x_f$, also zum Feld ($x_{f+1},y_f$),
+\item nach oben zum Feld mit einer $y$--Koordinate um 1 kleiner als $y_f$, also zum Feld ($x_f,y_{f-1}$),
+\item nach unten zum Feld mit einer $y$--Koordinate um 1 größer als $y_f$, also zum Feld ($x_f,y_{f+1}$),
+\end{itemize}
+machen.
+
+Wir können nun feststellen, dass
+\begin{lemma}\label{observ:distances}
+die minimale Anzahl der Schritte von einem Feld, auf dem eine Batterie $i$ liegt, zu einem Feld, 
+auf dem eine Batterie $j$ liegt, konstant ist.
+\end{lemma}
+
+Die minimale Anzahl der Schritte, die man von einem Feld $p$ zu einem Feld $q$ machen muss, nenne
+ich die \textit{Entfernung zwischen $p$ und $q$} oder \textit{Entfernung von $p$ zu $q$}.\\
+
+Die Anzahl der Schritte, die wir machen dürfen, ist durch die Größe der Ladung determiniert.
+Wir starten auf dem Feld der Startbatterie, auch \textit{Startfeld} genannt.
+Laut der Aufgabenstellung nehmen wir die Ladung der Batterie, auf Feld deren, wir momentan stehen und 
+die Größe dieser Ladung der Anzahl der Schitte entpricht, die wir momentan machen dürfen. 
+Eine solche Ladung bezeichne ich als die \textit{aktuelle Ladung}. Diese Ladung verkleinert sich um 1
+mit jedem gemachten Schritt.\\
+Wenn die Anzahl der Schritte reicht, um ein anderes Feld mit einer Batterie zu erreichen, müssen wir
+unsere aktuelle Ladung $a$ sofort gegen die auf dem Feld liegenden Ladung $b$ austauschen. Dann lassen
+wir die Ladung $a$ auf dem Feld der Ladung $b$ liegen. $b$ wird zu unserer nächsten aktuellen Ladung. 
+
+\TODO{TODO: Include Eingabeindex \texttt{inputID}}
+
+\subsection{Graph}
+Wir ordnen jedem Feld in der Matrix einen \textit{Brettindex} zu.
+Wir legen eine neue Menge fest: $V$. In dieser Menge befinden sich alle Brettindizes der Felder in $M$.
+Außerdem legen wir eine andere Menge fest: $E$.
+Wir iterieren durch alle Felder in $M$. Für jedes Feld $i$ werden die Brettindizes seiner benachbarten Felder bestimmt,
+also derjenigen, zu denen man von $i$ einen Schritt machen kann.
+In der Menge $E$ wird jeweils die Verbindung zwischen $i$ und einem Nachbarfeld mit Hilfe der Indizes von $i$ 
+und dem Nachbarn gespeichert. Jedes Feld kann dementsprechend maximal 4 Nachbarfelder besitzen.\\
+
+Anhand der festgelegten Mengen lässt sich ein ungerichteter, ungewichteter Graph $G(V, E)$ bilden.
+In diesem Graphen ist jeder Knoten ein Feld aus der Matrix $M$. Jede Kante ist demzufolge ein
+Schritt zwischen zwei Feldern in $M$. Sie hat stets das Gewicht 1.
+
+\subsubsection{BFS}
+Anhand der Beobachtung \ref{observ:distances} lässt sich feststellen, dass diese Entfernungen zwischen Feldern,
+auf denen Batterien liegen, sich durch einen Lauf vom Breitensuche-Algorithmus 
+(engl. \textit{breadth--first serach, BFS}) einfach bestimmen lassen.\\
+
+Für eine Batterie $b$ können wir auf folgender Weise die Entfernungen zu allen anderen Batterien bestimmen.
+Sie werden in einer zweidimensionaller Tabelle $A$ gespeichert.
+Bei jeder iterierten Stelle $A_{i,j}$ in der Tabelle $A$ entsprechen $i$ der Index der Batterie,
+von der die Entfernung gemessen wird, und $j$ der Index der anderen Batterie, deren Entfernung von $i$ bestimmt wird.
+Dementsprechend ist $A_{i,j}$ dann die minimale Entfernung von $i$ zu $j$.\\
+Es gibt auch eine parallele, zweidimensionale Tabelle $A'$, deren Funktion ich im nächsten Abschnitt erläutere.\\
+Wir finden im Graphen $G$ den Knoten, der dem Feld, auf dem $b$ liegt, entspricht.
+Wir fügen diesen Knoten mit einer Entfernung 0 in eine Warteschlange ein.
+Diese Warteschlange wird iteriert, so lange es noch Knoten gibt.
+Jeden iterierten Knoten nennen wir $i$ und seine entsprechende Entfernung von $b$: $d_i$.\\
+Wie nehmen $i$ aus der Warteschlange heraus. 
+Danach wird durch die Nachbarknoten von $i$ iteriert, dass heißt, durch diejenigen, die eine Kante mit $i$ besitzen.
+Jeden iterierten, benachbarten Knoten nenne ich an dieser Stelle $j$.
+Es wird überprüft, ob $j$ bereits besucht wurde. Wenn ja, wird der Knoten $j+1$ genommen.
+Wenn nicht, dann wird überprüft, ob der Knoten $j$ einem Feld entspricht, auf dem eine Batterie liegt.
+Wenn nicht, wird $j$ ganz normal in die Warteschlange mit der Entfernung $d_i + 1$ eingefügt.
+$j$ wird auch danach als besucht markiert.\\
+Wenn aber der Knoten $j$ einem Feld entspricht, auf dem eine Batterie liegt, wird zuerst geprüft,
+ob $A_{i,j}$ bereits gleich 1 oder 2 ist (mehr dazu im nächsten Abschnitt).
+Wenn nicht, wird $A_{i,j}$ der Wert $d_i + 1$ zugewiesen. Nun, nur wenn $d_i + 1 > 2$ wird der Knoten $j$ als
+besucht gekennzeichnet.\\
+Wenn aber $A_{i,j}$ bereits gleich 1 oder 2 ist, wird geprüft, ob $A'_{i,j}$ bereits einen Wert besitzt.
+Wenn ja und wenn $d_i + 1 < A'_{i,j}$, wird der Wert $A'_{i,j}$ als $d_i + 1$ aktualisiert. 
+Wenn es früher keinen Wert $A'_{i,j}$ nicht gab, wird er als $d_i + 1$ gespeichert.\\
+
+Wir sollen bemerken, dass wir 
+\begin{lemma}\label{observ:not-minimal-steps}
+auf dem Weg von einer Batterie $p$ zur Batterie $q$ nich immer die minimale Anzahl an Schritten $A_{p,q}$
+machen können, wenn die Größe der Ladung genügend ist, um das zu tun.
+\end{lemma}
+Es ist auch zu bemerken, dass
+\begin{lemma}\label{observ:2k-steps}
+wenn die minimale Anzahl der Schritte $A_{p,q} > 2$ oder $A'_{p,q} > 2$ ist, kann man stets die Batterie $q$ auch in $A_{p,q}+2k$,
+bzw. in $A'_{p,q}+2k$,
+wobei $k \in \mathbb{N^{+}}$, Schritten erreichen, so lange die Größe der aktuellen Ladung das erlaubt.
+\end{lemma}
+Der Beweis der Beobachtung \ref{observ:2k-steps} ist trivial: wenn wir auf einem Feld $f$ stehen, können nach demselben
+Feld $f$ mit genau 2 Schritten zurückehren, wenn wir zu einem benahcbarten Feld $h$ einen Schritt machen 
+und dann von $h$ zu $f$ zurück.\\
+So kann man auch die Beobachtung \ref{observ:not-minimal-steps} beweisen, indem man bemerkt, dass wir
+auf dem Weg von $p$ zu $q$ einfach einen Schritt zurück und nach vorne machen.\\
+
+Genau aus dem Grund musste ich auch zusätzlich mit Hilfe der Tabelle $A'$ prüfen, ob es auch
+bei den Entfernungen nicht größer als 2 einen anderen Weg gibt, der mindestens der Länge 3 ist.
+Tabelle $A'$ speichert die Länge der minimalen Entfernung von einer Batterie zu einer anderen,
+die auch länger ist als 2. Abbildung \ref{fig:distances-aux} präsentiert ein Beispiel,
+in dem diese besondere Unterscheidung wichtig ist.
+
+\begin{figure}[h]
+\centering
+\begin{tabular}{c c}
+\scalebox{1.5}{
+\begin{tabular}{|c|c|}
+\hline
+5 &  \\
+\hline
+1 & \\
+\hline
+\end{tabular}}
+& 
+\scalebox{1.5}{
+\begin{tabular}{|c|c|}
+\hline
+5 & 2 \\
+\hline
+1 & \\
+\hline
+\end{tabular}}
+\end{tabular}
+\caption{Dargestellt sind Fragmente einer Matrix. Die Zahlen stellen die Ladungen der Batterien dar, die auf diesen Feldern liegen.
+\underline{Im ersten Beispiel} kann man vom Feld mit 5 das Feld mit 1 in minimaler Anzahl von einem Schritt erreichen.
+Man kann auch aber dieses Feld in 3 Schritten erreichen, wenn man einen Schritt nach rechts, dann nach unten und nach links macht.
+Außerdem kann man laut der Beobachtung \ref{observ:2k-steps} auch dieses Feld in 5 Schritten erreichen.
+\underline{Im zweiten Beispiel} kann man nur das Feld mit 1 in einem Schritt erreichen, weil es keinen andren Weg vom Feld mit 5 
+zum Feld mit 1 gibt, der länger ist als 2.}
+\end{figure}\label{fig:distances-aux}
+
+\subsubsection{Schleifen in Knoten}
+Wir müssen auch einen Sonderfall berücksichtigen, dass man von einem Knoten zu demselben Knoten zurückkehren kann.
+Mit Hilfe der Tabellen $A$ und $A'$ können wir es nicht überprüfen, ob es überhaupt möglich ist.\\
+Um eine Schleife in Knoten $b$ durchzuführen, brauchen wir mindestens ein benachbartes Feld $i$, auf dem keine Batterie liegt.
+Mit Hilfe dieses Feldes können wir einen Schritt von $b$ zu $i$ machen und von $i$ zu $b$ zurück.
+Die Anzahl der Schritte ist $l = 2$.\\
+Wenn wir aber sicherstellen, dass es neben einem batteriefreien Feld $i$ ein anderes batteriefreies Feld $j$ gibt ($i \neq j$),
+können wir eine Schleife in $b$ erstellen, deren Länge $l=4$ ist. Auf folgender Weise machen wir die Schritte:
+$b \rightarrow i \rightarrow j \rightarrow i \rightarrow b$. Auch hier können wir die in der Beobachtung \ref{observ:2k-steps}
+bemerkte Ordnungsgemäßheit anwenden, wenn wir $l$ statt $A_{i,j}$ nehmen. (s. Abb. \ref{fig:extra-tiles}).
+Wir legen noch ein Array $T$ fest, in dem wir die Information an der Stelle $T_i$ speichern, ob die Batterie $i$
+zwei, eins oder null zusätliche, freie Nachbarfelder hat.\\
+
+\begin{figure}[h]
+\centering
+\begin{tabular}{c c c}
+\scalebox{1.5}{
+\begin{tabular}{|c|c|c|}
+\hline
+1 & 4 & 1\\
+\hline
+1 &   & 1\\
+\hline
+2 & 5 & 1\\
+\hline
+\end{tabular}}
+& 
+\scalebox{1.5}{
+\begin{tabular}{|c|c|c|}
+\hline
+1 & 4 & 1\\
+\hline
+1 &   & 1\\
+\hline
+1 &   & 1\\
+\hline
+2 & 5 & 1\\
+\hline
+\end{tabular}}
+& 
+\scalebox{1.5}{
+\begin{tabular}{|c|c|c|}
+\hline
+1 & 4 & 1\\
+\hline
+1 & 2 & 1\\
+\hline
+2 & 5 & 1\\
+\hline
+\end{tabular}}
+\end{tabular}
+\caption{Dargestellt sind Fragmente einer Matrix. Die Zahlen stellen die Ladungen der Batterien dar, die auf diesen Feldern liegen.
+\underline{Im ersten Beispiel} kann man maximal zwei Schritte von der Batterie mit der Ladung 4 machen, um an dieselbe Stelle zurückzukommen. \underline{Im zweiten Beispiel} kann man schon $2n$ Schitte machen, wobei $n \in \mathbb{N^{+}}$.
+\underline{Im dritten Beispiel} kann man überhaupt keine Schleife durchführen.}
+\end{figure}\label{fig:extra-tiles}
+
+Auf diese Weise bekommen wir eine Tabelle $A$ mit allen minimalen Entfernungen zu Batterien, die von jeder Batterie
+ereichbar sind. In der Tabelle $A'$ haben wir die zusätzlichen minimalen Entfernungen,
+wenn der entsprechende Wert in $A$ kleiner ist als 3. Außerdem haben wir ein Array $T$, in dem die 
+Anzahl der zusätlichen, batteriefreien Felder jeder Batterie gespeichert ist.
+
+\subsection{Backtracking}
+
+\subsection{Laufzeit}\label{sec:time}
+
+$b$ -- Anzahl der Batterien\\
+$l$ -- Länge und Breite der Matrix $M$\\
+
+Vorbereitung der Tabellen $A$ und $A'$:
+\begin{itemize}
+  \item Einlesen der Batterien: $O(b)$
+  \item Bildung des Graphen: $O(l^2)$\\
+  Zuordnung der Brettindizes und Esrstellung der Menge $E$: $O(l^2)$.
+  \item Breitensuche: $O(b*l)$\\
+  Die Laufzeit vom Breitensuchealgorithmus ist $O(V + E)$, $V = l$ und $E \leqslant 4*l$: $O(l+l)$.\\
+  Der Algorithmus wird auf jeder Batterie angewendet: $O(b*l)$.
+  \item Bestimmung der Schleifen in Knoten: $O(b)$\\
+  Für jede Batterie werden die Schleifen in Knoten bestimmt, eine solche Bestimmu läuft in $O(1)$,
+  also für alle Batterien: $O(b)$.
+\end{itemize}
+
+
+
+\subsection{Klassifizierung des Problems}
+Angenommen, sind alle Werte in $A$ 1 und alle Batterien haben auch Ladungen 1 (wie im Beispiel \ref{example:1}).
+Nun ist das Problem der Aufgabe, einen Hamiltonpfad in diesem entstanden Graphen zu finden.
+O.b.d.A. können wir annehmen, dass es sich um einen Hamiltonpfad und keinen Hamiltonzyklus handelt.
+Wir starten üblicherweise von der Batterie mit Index 0 und gehen zu nächsten Batterien.
+Wir müssen jedoch anmerken, dass wir bei der letzten Batterie
+die Ladung zur nächsten Batterie nicht weiterleiten können, weil das schon das Ende der Matrix ist.
+In diesem Falle können wir einfach die von der letzten Batterie zur vorletzten gehen.
+Wir zählen dann auch nicht das vorletzte Feld als zweimal besucht.\\
+Das Hamiltonkreisproblem ist ein NP--vollständiges Problem.
+Wenn wir mehrere verschiedenen Ladungen und mehr Verbindungen unterschiedlicher Länge hinzufügen, 
+wird das Problem komplexer. Daraux können wir schlussfolgern, dass es sich in unserem Problem
+auch um NP--Vollständigkeit handelt. 
+
+\subsection{Generierung von Spielsituationen}
+
+
+\subsection{Erweiterungen}
+
+
+
+\newpage
+\section{Umsetzung}
+In meinem Programm wird eine Batterie als eine Klasse \texttt{Battery} dargestellt.
+Jedes Objekt einer solchen Klasse besitzt jeweils eine $x$-- und $y$--Koordinate,
+einen ganzzahligen Wert \texttt{charge}, der der Ladung einer Batterie entspricht;
+einen Brettindex \texttt{boardID} und einen Eingabeindex \texttt{inputID}.\\
+
+\subsection{Die Klasse \texttt{Graph}}
+Wir erstellen zwei Matrizen: \texttt{distances} und \texttt{distancesAux}, die den Matrizen 
+$A$ und $A'$ entsprechen. Sie sind jeweils auf folgender Weise erstellt: \texttt{vector< vector<int> >}.
+Außerdem erstellen wir noch ein Array \texttt{extraTiles}, das dem Array $T$ entspricht.\\
+
+In dieser Klasse wird die Textdatei eingelesen. Mit Hilfe der eingelesenen Größe der Matrix $M$\\ \texttt{boardDimension},
+erstelle ich eine Matrix als \texttt{vector< vector<int> >}, die ich \texttt{board} nenne.
+Beim Einlesen jeder Batterie werden ihr die eingelesenen Koordinaten, sowie die Ladung zugewiesen.
+Danach werden jeder Batterie ihre Indizes zugeordnet. Als \texttt{inputID} gilt die
+Reihenfolge, in der die Batterien in der Textdatei auftreten. Die Startbatterie $s$ bekommt einen
+Eingabeindex von 0. Die restlichen Baterrien bekommen entsprechend die Indizes um 1 größer als ihre Vorgänger.
+Für die Bestimmung des Brettindex einer Batterie $b$ bediene ich mich der folgender Formel:
+\begin{align*}
+\texttt{boardID}(b) = (b_y-1) * \texttt{boardDimension} + b_x-1
+\end{align*}
+Danach füge ich jeweilige Baterie in einen Map--Container \texttt{batteryToBoardID} mit ihrem entsprechenden Brettindex
+und gleich danach in einen Map--Container \texttt{batteryToBoardID} ein. Im ersten dienen die Batterien als Schlüssel und werden
+ihenen Brettindizes zugeordnet und im zweiten passiert das Gleiche aber andersherum: mit Brettindizes als Schlüsseln.\\
+Danach erfolgt das Gleiche, wir fügen jeweilige Batterie in Map--Container \texttt{batteryToInputID} und
+\texttt{inputIDToBattery} ein, diesmal mit ihren entsprechenden Eingabeindizes.\\
+
+Es wird ein Array \texttt{nodes} in Form von \texttt{vector< vector< pair<int, int> > >}
+erstellt, das die Nachbarn jedes Brettindex in der Matrix in Form von 
+\texttt{pair}(Brettindex des Nachbarn, die Ladung des Nachbarn) enthält.\\
+In der Methode \texttt{determineConnections()} wird die Matrix \texttt{board} iteriert.
+Jedem Brettindex werden ihre Nachbarn im Array \texttt{neighbors} gespeichert.
+Bei jeder Iteration werden die Brettindizes der Nachbarn anhand der obenstehenden Formel bestimmt.
+Die Ladung an einer Stelle rufen wir aus der Matrix \texttt{board} ab. Wir speichern die beiden Informationen
+im genannten Array. So durchlaufen wir alle Nachbarn jeder Stelle in der Matrix $M$.
+Am Ende fügen wir das Array \texttt{neighbors} am Ende des Arrays \texttt{nodes}.\\
+
+In der Methode \texttt{BFS(Battery b)} läuft natürlich der Breitensuche-Algorithmus.
+Wir erstellen zwei lokale Arrays \texttt{battDistances} und \texttt{battDistancesAux} jeweils der Länge
+der Anzahl aller Batterien. Außerdem erstellen wir ein Array \texttt{vis} mit \texttt{bool} der Größe
+$\texttt{boardDimension}^2$, in dem wir die besuchten Knoten markieren.\\
+Als \texttt{currInputID} speichern wir den Eingabeindex der Batterie \texttt{b}.
+Wir formen eine Warteschlange \texttt{q}, die aus \texttt{pair <int, int>} besteht. Jedes solche Paar enthält
+den Brettindex und Entfernung in Schritten von der Batterie \texttt{b}.\\
+Wir fügen in \texttt{q} den Brettindex von \texttt{b} mit der Entfernung 0 ein. Wir markieren im Array \texttt{vis}
+den entsprechenden Brettindex mit 1. Dann folgt die Iteration der Warteschlange, die so lange dauert, bis es
+noch Elemente in \texttt{q} gibt.\\
+Als \texttt{currBoardID} speichern wir den Brettindex, der sich am Anfang der Warteschlange befindet
+und als \texttt{currDist} speichern wir die die Entfernung des Feldes \texttt{currBoardID} von \texttt{q}.
+Sofort entfernen wir auch dieses erste Element aus der Warteschlange. Es folgt eine Iteration durch die Nachbarn
+von \texttt{currBoardID} im Array \texttt{nodes}.\\
+Als \texttt{neighBoardID} und \texttt{neighCharge} bezeichne ich entsprechend den Brettindex des iterierten
+Nachbarn und die auf seinem Feld liegende Ladung. Es wird zuerst überprüft, ob \texttt{neighBoardID}
+bereits besucht wurde. Wenn ja, wird der nächste Nachbar genommen.\\
+Dann wird überprüft, ob \texttt{neighCharge} größer als 0 ist, das heißt, ob auf dem Feld \texttt{neighBoardID} eine 
+Batterie liegt.\\
+Wenn nicht, wird \texttt{neighBoardID} mit dem Wert \texttt{currDist} + 1 in \texttt{q} eingefügt.
+Auch wird \texttt{neighBoardID} in \texttt{vis} mit 1 gekennzeichnet.\\
+Wenn ja, wird die entsprechende Batterie anhand \texttt{neighBoardID} im Map--Container
+\texttt{boardIDToBattery} gefunden. Die Laufzeit der Suchfunktion des Map--Containers wird im Abschnitt
+\ref{sec:time} nicht betrachtet. Die gefundene Batterie nenne ich \texttt{neighborB}. 
+Ihren Eingabeindex nenne ich \texttt{currNeighInputID}.
+Nun wenn \texttt{battDistances} an der Stelle \texttt{currNeighInputID} gleich 2 oder 1 ist,
+wird der Wert in \texttt{battDistancesAux} an der Stelle \texttt{currNeighInputID} aktualisiert, wenn
+er größer ist als $\texttt{currDist} + 1$, oder wenn noch keinen solchen Wert gibt, wird als $\texttt{currDist} + 1$
+gespeichert.\\
+Andernaflls wird in \texttt{battDistances} an der Stelle \texttt{currNeighInputID} der Wert $\texttt{currDist} + 1$ gespeichert.
+Nun nur wenn $\texttt{currDist} + 1$ größer ist als 2, wird \texttt{neighBoardID} als besucht in \texttt{vis} gekennzeichent.\\
+Wenn es keine weiteren Brettindizes in der Warteschlange gibt, füge ich das Array \texttt{battDistances}
+an der Stelle von \texttt{currInputID} in \texttt{distances} ein.
+Das Gleiche erfolgt für das Array \texttt{battDistancesAux}. Es wird in \texttt{distancesAux} an der Stelle
+\texttt{currInputID} gespeichert.\\
+
+Die Methode \texttt{checkOneTile(Battery b)} prüft, ob es sich neben dem Feld, auf dem die Batterie \texttt{b}
+liegt, ein betteriefreies Feld befindet.\\
+Es wird das Array \texttt{nodes} an der Stelle, die dem Brettindex von \texttt{b} entspricht, iteriert.
+Es wird überprüft, ob mindestens ein Nachbar von \texttt{b} eine Ladung von 0 besitzt, das heißt, auf
+diesem Feld keine Batterie liegt. Es wird 1 ausgegeben, falls es ein Feld gibt, auf dem keine Batterie liegt.
+Andernfalls wird 0 ausgegeben.\\
+
+Die Methode \texttt{checkTwoTiles(Battery b)} prüft, ob sich neben dem Feld, auf dem die Batterie \texttt{b}
+liegt, ein betteriefreies Feld befindet und dann überprüft, ob es noch ein batteriefreis Feld neben diesem
+Feld gibt.\\
+Diese Funkiton funktioniert auf ähnlicher Weise wie die Methode \texttt{checkOneTile}.
+Nun iterieren wir noch durch das Array von Nachbarn vom batteriefreien Nachbarn von \texttt{b} in \texttt{nodes}.
+Wenn es ein solches betteriefreie Feld gibt, wird 1 ausgegeben. Andernfalls wird 0 ausgegeben.\\
+
+Im Konstruktor dieser Klasse lassen wir die Methoden \texttt{readFile} und dann \texttt{determineConnections}
+laufen. Danach für jede Batterie lassen wir die Methode \texttt{BFS} laufen.
+Gleich danach wenden wir die Methode \texttt{checkOneTile} an jeweiliger Batterie an und wenn
+1 ausgegeben wird, schreiben wir 1 an der Stelle des Eingabeindex dieser Batterie in \texttt{extraTiles}.
+Danach wenden wir die Methode \texttt{checkTwoTiles} an jeweiliger Batterie an und wenn
+1 ausgegeben wird, schreiben wir 2 an der Stelle des Eingabeindex dieser Batterie in \texttt{extraTiles}.\\
+So bekommen wir eine Tabelle \texttt{distances} mit allen minimalen Entfernungen von
+jeder Batterie zu allen anderen. Die Entfernungen zu den Batterien, die nicht erreicht werden können, betragen 0.
+Außer diesen Batterien besitzt nur die Batterie, von der wir die Entfernungen messen, den Wert 0.
+Für Schleifen haben wir ja auch das Array \texttt{extraTiles}. Das bedeutet, dass wir in weiteren Betrachtungen
+die Stellen, an denen 0 steht, überhaupt nicht betrachten müssen.
+
+\subsection{Die Klasse \texttt{Backtracking}}
+
+\subsection{Die Klasse \texttt{Generator}}
+
+\newpage
+\section{Beispiele}
+
+\subsection{Beispiel 0 (BWINF)}
+Textdatei: \texttt{stromrallye0.txt}\\
+
+\fbox{Die Spielsituation ist lösbar.}\\
+
+0(0) 3(3) 1(3) 3(3) 2(6) 2(2) 
+
+\subsection{Beispiel 1 (BWINF)}\label{example:1}
+Textdatei: \texttt{stromrallye1.txt}\\
+
+\subsection{Beispiel 2 (BWINF)}
+Textdatei: \texttt{stromrallye2.txt}\\
+
+\subsection{Beispiel 3 (BWINF)}
+Textdatei: \texttt{stromrallye3.txt}\\
+
+\fbox{Die Spielsituation ist nicht lösbar.}
+
+\subsection{Beispiel 4 (BWINF)}
+Textdatei: \texttt{stromrallye4.txt}\\
+
+\fbox{Die Spielsituation ist lösbar.}\\
+
+\subsection{Beispiel 5 (BWINF)}
+Textdatei: \texttt{stromrallye5.txt}\\
+
+\fbox{Die Spielsituation ist nicht lösbar.}
+
+\subsection{Beispiel 6}
+Textdatei: \texttt{stromrallye6.txt}\\
+
+\fbox{Die Spielsituation ist lösbar.}\\
+
+0(0) 2(9) 1(9) 3(2) 3(2) 3(2) 1(2) -1(1)
+
+\subsection{Beispiel 7}
+Textdatei: \texttt{stromrallye7.txt}\\
+
+\fbox{Die Spielsituation ist lösbar.}\\
+
+0(0) 1(4) 3(7) 4(2) 3(10) 2(3) 1(4) 5(6) 5(2) 12(10) 6(3) 6(2) 7(2) 8(2) 9(2) 10(2) 11(2) 13(1) 14(1) 15(1) 16(1) 17(1) 18(1) 19(1) 20(3) 21(1) 22(1) 23(1) 24(1) 25(1) 28(1) 27(1) 26(1) 27(1) 30(1) 31(1) 30(1) 33(1) 34(1) 35(1) 32(1) 29(1) -1(1)
+
+
+\newpage
+\section{Quellcode}
+\lstinputlisting[language=C++]{stromrallye.m}
+
+\end{document}
