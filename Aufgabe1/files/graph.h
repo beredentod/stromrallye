@@ -65,12 +65,12 @@ public:
 		readFile(filename);
 		preprocess();
 
-		for (int i = 1; i <= board.size(); i++)
+		/*for (int i = 1; i <= board.size(); i++)
 		{
 			for (int j=1; j < board[i].size();j++)
 				cout<<board[i][j]<<" ";
 			cout<<"\n";
-		}
+		}*/
 
 		/*for (auto x: batteries)
 		{

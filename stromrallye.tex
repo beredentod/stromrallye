@@ -44,6 +44,7 @@
 \usepackage{algpseudocode}
 \usepackage{algorithm}
 \usepackage{gensymb}
+\usepackage{tikz}
 
 % Für Quelltext
 \usepackage{listings}
@@ -123,9 +124,10 @@ Eine solche Ladung bezeichne ich als die \textit{aktuelle Ladung}. Diese Ladung 
 mit jedem gemachten Schritt.\\
 Wenn die Anzahl der Schritte reicht, um ein anderes Feld mit einer Batterie zu erreichen, müssen wir
 unsere aktuelle Ladung $a$ sofort gegen die auf dem Feld liegenden Ladung $b$ austauschen. Dann lassen
-wir die Ladung $a$ auf dem Feld der Ladung $b$ liegen. $b$ wird zu unserer nächsten aktuellen Ladung. 
+wir die Ladung $a$ auf dem Feld der Ladung $b$ liegen. $b$ wird zu unserer nächsten aktuellen Ladung.\\
 
-\TODO{TODO: Include Eingabeindex \texttt{inputID}}
+Jede Batterie besitzt auch einen \textit{Eingabeindex}, der beim Einlesen zugeordnet ist.
+Diese Indizes entsprechen der Reihenfolge der Batterien in der Eingabe. Die Startbatterie besitzt stets den Eingabeindex 0.\\
 
 \subsection{Graph}
 Wir ordnen jedem Feld in der Matrix einen \textit{Brettindex} zu.
@@ -284,6 +286,136 @@ wenn der entsprechende Wert in $A$ kleiner ist als 3. Außerdem haben wir ein Ar
 Anzahl der zusätlichen, batteriefreien Felder jeder Batterie gespeichert ist.
 
 \subsection{Backtracking}
+Unsere Aufgabe bleibt nun, so einen Pfad von der Startbatterie $s$ zu finden, der durch alle Batterien führt und am Ende alle Ladungen 0
+betragen.
+Außerdem muss man unbedingt den Aspekt beachten, dass man von einer Batterie zu einer anderen übergehen darf, nur wenn
+die aktuelle Ladung nicht kleiner ist als die Entfernung zwischen den beiden.
+Darüber hinaus wird die übriggebliebene Ladung mit der an der Stelle der Zielbatterie liegenden Ladung ausgetauscht.
+Wir können auch sofort bemerken, dass es sich gar nicht lohnt, von einer Batterie zu einem Feld, auf dem keine Batterie
+liegt, zu übergehen, weil wir einfach nicht fortsetzen könnten. Der Sonderfall ist hier natürlich die Situation am
+Ende der Aufgabe, wenn alle Batterien besucht sind und alle liegenden Ladungen 0 betragen, aber wir mit der aktuellen Ladung übriggeblieben sind.
+Dann müssen wir die aktuelle Ladung noch verbrauchen und es ergibt genauso viel Sinn zu einem batteriefreien sowie zu einem Feld mit einer Batterie
+zu übergehen.\\
+Wenn wir diese Situation ausschließen, können wir bermeken, dass wir stets von einer Batterie zu einer anderen übergehen müssen.\\
+Wir können auch bemerken, dass dieses Problem sehr komplex ist. Schauen wir auf ein vereinfachtes Beispiel dieser Aufgabe.
+
+\subsubsection{Klassifizierung des Problems}\label{sec:classification}
+Angenommen, sind alle Werte in $A$ 1 und alle Batterien haben auch Ladungen 1 (wie im Beispiel \ref{example:1}).
+Nun ist das Ziel der Aufgabe, einen Hamiltonpfad in diesem entstanden Graphen zu finden.
+O.b.d.A. können wir annehmen, dass es sich um einen Hamiltonpfad und keinen Hamiltonzyklus handelt.
+Wir starten üblicherweise von der Batterie mit Index 0 und gehen zu nächsten Batterien.
+Wir müssen jedoch anmerken, dass wir bei der letzten Batterie
+die Ladung zur nächsten Batterie nicht weiterleiten können, weil das schon das Ende der Matrix ist.
+In diesem Falle können wir einfach die von der letzten Batterie zur vorletzten gehen.
+Wir zählen dann auch nicht das vorletzte Feld als zweimal besucht.\\
+Das Hamiltonkreisproblem ist ein NP--vollständiges Problem.
+Wenn wir mehrere verschiedenen Ladungen und mehr Verbindungen unterschiedlicher Länge hinzufügen, 
+wird das Problem komplexer. Daraux können wir schlussfolgern, dass es sich in unserem Problem
+auch um NP--Vollständigkeit handelt.\\
+
+Wir sollen auch bemerken, dass die Größe der Eingabe in den Beispielen sehr klein bleibt. Aus diesem entschied ich mih
+für eine weniger effiziente, aber sehr genaue Methode, um diese Aufgabe zu lösen: Backtracking. 
+
+Wir betrachten ein Array $C$, die die Ladungen jeder Batterie enthält. An jeder Stelle $i$ in diesem Array wird die aktuelle
+Ladung einer Batterie mit dem Eingabeindex $i$ gespeichert.
+
+\subsubsection{Erreichbarkeit}
+Wir sollen zuerst definieren, was wir unter \textit{Erreichen} einer Batterie $c$ von einer $b$ aus verstehen.
+Eine Batterie $c$ kann von einer Batterie $b$ aus erreicht werden, wenn die aktuelle Ladung nicht kleiner ist als die Entfernung 
+an der Stelle $A_{b,c}$. Das bedeutet einfach, dass die Ladung ausreicht, um die Schritte von $b$ zu $c$ zu machen.
+Außerdem soll $c$ in dem Array $C$ eine Ladung größer als 0 besitzen. So ist $c$ \textit{erreichbar}.\\
+Ein Sonderfall in dieser Definition ist natürlich eine Schleife von $b$ zu sich selbst. 
+In diesem Fall muss der Wert an der Stelle $b$ in der Matrix $T$ mindestens 1 betragen und die aktuelle Ladung muss
+mindestens 2 sein.
+
+\subsubsection{Rekursion}
+Ich bildete eine rekursive Funktion, die alle möglichen Verbindungen zwischen jeweiligem Paar von Batterien untersucht.
+Bei jedem Lauf der Funktion wird untersucht, zu welcher Batterie und mit wie vielen Schritten übergangen wird.\\
+Wenn es möglich ist, von einer Batterie $a$ aus eine Batterie $b$ in $c$ Schitten zu erreichen, lässt man diese rekursive
+Funktion dann an der Batterie $b$ laufen. Wenn es nicht geht, an einer Stelle fortzusetzten, wird abgebrochen
+und man geht zürück zu der Batterie, an der noch eine Möglichkeit entsteht, von dieser Batterie einen anderen Weg zu nehmen
+und mit einer anderen Anzahl von Schitten und/oder zu einer anderen Batterie zu übergehen. Wenn es zu einem Zustand kommt, dass alle
+Batterien entladen sind, also alle Stellen in $C$ 0 betragen, wird dieser Stand als ein Ergebnis behandelt und ausgegeben.\\
+
+Wir können die Funktionsweise dieser Funktion in Analogie zur Tiefensuche (engl. \textit{depth--first serach, DFS}) stellen.
+In diesem Falle haben wir mit einem großen Baum mit einer Wurzel in $s$ zu tun.
+Jede Kante in einem solchen Baum entspricht einer möglichen
+Verbindung von einer Batterie zu einer anderen mit einer bestimmten Anzahl von Schritten.
+Diese Anzahl an Schritten kann dementsprechend als ein Gewicht an einer Kanten gelten.
+Die Blätter in einem solchen Baum sind natürlich Batterien, die von einer anderen Batterien an einem niedrigeren Niveau liegt.\\
+
+\begin{figure}[h]
+\begin{tikzpicture}[
+level 1/.style={level distance=4cm, sibling distance=17mm},
+level 2/.style={level distance=2cm, sibling distance=9mm}]
+\tikzstyle{every node}=[circle,draw]
+\node (s){$0^9$}
+    child {node (a1) {$1^3$}
+      child {node (a1c1) {$3^3$} edge from parent node[left,draw=none] {3}}
+      child {node (a1a1) {$1^6$} edge from parent node[right,draw=none] {2}}
+     edge from parent node[above,draw=none] {3}}
+    child {node (a2) {$1^3$} 
+      child {node (a2c1) {$3^3$} edge from parent node[left,draw=none] {3}}
+      child {node (a2a2) {$1^4$} edge from parent node[right,draw=none] {2}} 
+      edge from parent node[above,draw=none] {5}}
+    child {node (a3) {$1^3$} 
+      child {node (a3c1) {$3^3$} edge from parent node[left,draw=none] {3}}
+      child {node (a3a3) {$1^2$} edge from parent node[right,draw=none] {2}}
+    edge from parent node[above,draw=none] {7}}
+    child {node (a4) {$1^3$} 
+      child {node (a4c1) {$3^3$} edge from parent node[left,draw=none] {3}}
+      child {node (a4a4) {$1^0$} edge from parent node[right,draw=none] {2}}
+    edge from parent node[left,draw=none] {9}}
+    child {node (b1) {$2^2$}
+      child {node (b1b1) {$2^4$} edge from parent node[right,draw=none] {2}}
+    edge from parent node[left,draw=none] {5}}
+    child {node (b2) {$2^2$}
+      child {node (b2b2) {$2^2$} edge from parent node[right,draw=none] {2}}
+    edge from parent node[left,draw=none] {7}}
+    child {node (b3) {$2^2$} 
+      child {node (b3b3) {$2^0$} edge from parent node[right,draw=none] {2}}
+    edge from parent node[below,draw=none] {9}}
+    child {node (c1) {$3^3$} 
+      child {node (c1a1) {$1^3$} edge from parent node[left,draw=none] {3}}
+      child {node (c1c1) {$3^3$} edge from parent node[right,draw=none] {2}}
+    edge from parent node[below,draw=none] {6}}
+    child {node (c2) {$3^3$}
+      child {node (c2c1) {$1^3$} edge from parent node[left,draw=none] {3}}
+      child {node (c2c2) {$3^1$} edge from parent node[right,draw=none] {2}}
+    edge from parent node[below,draw=none] {8}};
+\end{tikzpicture}
+\caption{Ein abgebildeter Baum der 0., 1. und 2. Niveaus des Beispiels \ref{example:0} (das Beispiel aus der Aufgabenstellung).
+Die Nummern in Knoten entsprechen den Eingabeindizes der Batterien. Die Potenzen stellen die Ladung dar, die wir auf einem
+Feld finden, wenn wir eine Batterie erreichen.}
+\end{figure}
+
+Diese rekursive Funktion nimmt als Parameter einen Eingabeindex $id$, die aktuelle Ladung, ein kopiertes Array $C$
+und ein Array $R$, das die Information über einen aktuellen Pfad von der Batterie 0 zur Batterie $id$ speichert.
+Das Array $R$ speichert die Eingabeindizes der Batterien, die bereits besucht wurden, mit der entsprechenden Anzahl von Schritten,
+die gemacht wurden, um diese Zielbatterie zu erreichen.\\
+Am Anfang der Funktion werden alle erreichbaren Batterien bestimmt. Ich forme dadruch ein Array $N_{id}$, das alle
+erreichbaren Nachbarn von $id$, also die Eingabeindizes der Batterien, mit ihren entsprechenden minimalen Entfernungen enthält.
+Bei der Bildung dieses Arrays stelle ich auch sicher, dass diese Batterien nach ihren verbliebenen Ladungen absteigend
+sortiert sind.\\
+Nun prüfe ich, ob $N_id$ leer ist. Das ist der terminierende Fall in meinem Algorithmus.
+Wenn ja, prüfe ich, ob $T_{id} > 1$. Wenn die Batterie $id$ mindestens zwei batteriefreie Felder besitzt,
+kann ich die restliche, aktuelle Ladung auf diesen beiden Feldern verbrauchen, indem wir einfach hin und her von einem 
+Feld zum anderen übergehen. 
+Dann erfolgt eine Prüfung, ob das Array $C$ an allen Stellen 0 enthält. Wenn ja, ist $R$ unser Ergebnis und der boolsche Wert 1 wird
+ausgegeben. Andernfalls haben wir kein Ergebnis und der boolsche Wert 0 wird ausgegeben.\\
+Wenn $N_{id}$ leer ich prüfe ich auch, ob $T_{id} = 1$. Wenn ja, können wir die ein restlicher Schritt verbrauchen, 
+indem wir zu einem batteriefreien Feld übergehen. Danach prüfen wir, ob das Array $C$ an allen Stellen 0 enthält und die
+aktuelle Ladung 0 beträgt. Wenn ja, ist unser Ergebnis ebenfalls $R$. Der boolsche Wert 1 wird ausgegeben. Andernfalls wird
+der boolsche Wert 0 ausgegeben.\\
+Anschließend, wenn $N_{id}$ leer ist und es keine adjazenten batteriefreien Felder gibt,  
+
+
+Die erste aktuelle Ladung ist natürlich die Ladung der Batterie $s$, das heißt, der Startbatterie. An dieser Stelle
+setzen wir im Array $C$ an der Stelle $0$ den Wert 0.\\
+Wir lassen diese Funktion mit folgenden Parametern laufen: 0 als Eingabeindex, die aktuelle Ladung der Batterie $s$, 
+
+
+
 
 \subsection{Laufzeit}\label{sec:time}
 
@@ -304,22 +436,9 @@ Vorbereitung der Tabellen $A$ und $A'$:
 \end{itemize}
 
 
-
-\subsection{Klassifizierung des Problems}
-Angenommen, sind alle Werte in $A$ 1 und alle Batterien haben auch Ladungen 1 (wie im Beispiel \ref{example:1}).
-Nun ist das Problem der Aufgabe, einen Hamiltonpfad in diesem entstanden Graphen zu finden.
-O.b.d.A. können wir annehmen, dass es sich um einen Hamiltonpfad und keinen Hamiltonzyklus handelt.
-Wir starten üblicherweise von der Batterie mit Index 0 und gehen zu nächsten Batterien.
-Wir müssen jedoch anmerken, dass wir bei der letzten Batterie
-die Ladung zur nächsten Batterie nicht weiterleiten können, weil das schon das Ende der Matrix ist.
-In diesem Falle können wir einfach die von der letzten Batterie zur vorletzten gehen.
-Wir zählen dann auch nicht das vorletzte Feld als zweimal besucht.\\
-Das Hamiltonkreisproblem ist ein NP--vollständiges Problem.
-Wenn wir mehrere verschiedenen Ladungen und mehr Verbindungen unterschiedlicher Länge hinzufügen, 
-wird das Problem komplexer. Daraux können wir schlussfolgern, dass es sich in unserem Problem
-auch um NP--Vollständigkeit handelt. 
-
 \subsection{Generierung von Spielsituationen}
+\subsubsection{Idee}
+\subsubsection{Laufzeit}
 
 
 \subsection{Erweiterungen}
@@ -432,48 +551,169 @@ die Stellen, an denen 0 steht, überhaupt nicht betrachten müssen.
 
 \newpage
 \section{Beispiele}
+Die untenstehenden Zahlen, die die Folgen der Schitten bei einer Spielsituation darstellen, stehen für die Eingabeindizes
+der Batterien in einer Spielsituation. Diese Indizes entsprechen der Reihenfolge der Batterien in der Textdatei. Man fängt mit 0 an,
+diese Zahl entspricht der Startbatterie.\\
+Eine Notation $a(d_a) \rightarrow b(d_b)$ bedeutet, dass man von der Batterie mit dem Eingabeindex $a$ zur Betterie $b$ genau $d_b$ Schritten
+gemacht hat. Das heißt, dass man von der Ladung von $a$ $d_b$ abgezogen hat und die übrige Ladung auf das Feld mit $b$ gestellt hat.\\
+Zahl $-1$ steht für ein beliebiges Feld, zu dem man am Ende übergeht, um die restliche Ladung aus der letzten Batterie auszunutzen.
 
-\subsection{Beispiel 0 (BWINF)}
+\subsection{Beispiel 0 (BWINF)}\label{example:0}
 Textdatei: \texttt{stromrallye0.txt}\\
 
+\noindent
 \fbox{Die Spielsituation ist lösbar.}\\
 
-0(0) 3(3) 1(3) 3(3) 2(6) 2(2) 
+\noindent
+Zeit: 0 min 0 s\\
+
+\noindent
+$0 \rightarrow3(3) \rightarrow 1(3) \rightarrow 3(3) \rightarrow 2(6) \rightarrow 2(2)$
 
 \subsection{Beispiel 1 (BWINF)}\label{example:1}
 Textdatei: \texttt{stromrallye1.txt}\\
 
-\subsection{Beispiel 2 (BWINF)}
+\noindent
+\fbox{Die Spielsituation ist lösbar.}\\
+
+\noindent
+Zeit: 0 min 0 s\\
+
+\noindent
+$0 \rightarrow1(1) \rightarrow 2(1) \rightarrow 3(1) \rightarrow 4(1) \rightarrow 5(1) \rightarrow 6(1) \rightarrow 7(1) \rightarrow 8(1) 
+\rightarrow 9(1) \rightarrow 19(1) \rightarrow 18(1) \rightarrow 17(1) \rightarrow 16(1) \rightarrow 15(1) \rightarrow 14(1) \rightarrow 13(1) 
+\rightarrow 12(1) \rightarrow 11(1) \rightarrow 10(1) \rightarrow 20(1) \rightarrow 21(1) \rightarrow 22(1) \rightarrow 23(1) \rightarrow 24(1) 
+\rightarrow 25(1) \rightarrow 26(1) \rightarrow 27(1) \rightarrow 28(1) \rightarrow 29(1) \rightarrow 39(1) \rightarrow 38(1) \rightarrow 37(1) 
+\rightarrow 36(1) \rightarrow 35(1) \rightarrow 34(1) \rightarrow 33(1) \rightarrow 32(1) \rightarrow 31(1) \rightarrow 30(1) \rightarrow 40(1) 
+\rightarrow 41(1) \rightarrow 42(1) \rightarrow 43(1) \rightarrow 44(1) \rightarrow 45(1) \rightarrow 46(1) \rightarrow 47(1) \rightarrow 48(1) 
+\rightarrow 49(1) \rightarrow 59(1) \rightarrow 58(1) \rightarrow 57(1) \rightarrow 56(1) \rightarrow 55(1) \rightarrow 54(1) \rightarrow 53(1) 
+\rightarrow 52(1) \rightarrow 51(1) \rightarrow 50(1) \rightarrow 60(1) \rightarrow 61(1) \rightarrow 62(1) \rightarrow 63(1) \rightarrow 64(1) 
+\rightarrow 65(1) \rightarrow 66(1) \rightarrow 67(1) \rightarrow 68(1) \rightarrow 69(1) \rightarrow 79(1) \rightarrow 78(1) \rightarrow 77(1) 
+\rightarrow 76(1) \rightarrow 75(1) \rightarrow 74(1) \rightarrow 73(1) \rightarrow 72(1) \rightarrow 71(1) \rightarrow 70(1) \rightarrow 80(1) 
+\rightarrow 81(1) \rightarrow 82(1) \rightarrow 83(1) \rightarrow 84(1) \rightarrow 85(1) \rightarrow 86(1) \rightarrow 87(1) \rightarrow 88(1) 
+\rightarrow 89(1) \rightarrow 99(1) \rightarrow 98(1) \rightarrow 97(1) \rightarrow 96(1) \rightarrow 95(1) \rightarrow 94(1) \rightarrow 93(1) 
+\rightarrow 92(1) \rightarrow 91(1) \rightarrow 90(1) \rightarrow 80(1) \rightarrow 91(1) 
+$
+
+\subsection{Beispiel 2 (BWINF)}\label{example:2}
 Textdatei: \texttt{stromrallye2.txt}\\
 
-\subsection{Beispiel 3 (BWINF)}
+\noindent
+\fbox{Die Spielsituation ist lösbar.}\\
+
+\noindent
+Zeit: 0 min 0 s\\
+
+\noindent
+$0 \rightarrow 50(1) \rightarrow 39(1) \rightarrow 28(1) \rightarrow 17(1) \rightarrow 6(1) \rightarrow 5(1) \rightarrow 4(1) \rightarrow 3(1) 
+\rightarrow 2(1) \rightarrow 1(1) \rightarrow 12(1) \rightarrow 13(1) \rightarrow 14(1) \rightarrow 15(1) \rightarrow 16(1) \rightarrow 27(1) 
+\rightarrow 26(1) \rightarrow 25(1) \rightarrow 24(1) \rightarrow 23(1) \rightarrow 34(1) \rightarrow 35(1) \rightarrow 36(1) \rightarrow 37(1) 
+\rightarrow 38(1) \rightarrow 49(1) \rightarrow 48(1) \rightarrow 47(1) \rightarrow 46(1) \rightarrow 45(1) \rightarrow 56(1) \rightarrow 57(1) 
+\rightarrow 58(1) \rightarrow 59(1) \rightarrow 60(1) \rightarrow 70(1) \rightarrow 69(1) \rightarrow 68(1) \rightarrow 67(1) \rightarrow 66(1) 
+\rightarrow 77(1) \rightarrow 78(1) \rightarrow 79(1) \rightarrow 80(1) \rightarrow 81(1) \rightarrow 82(1) \rightarrow 71(1) \rightarrow 72(1) 
+\rightarrow 61(1) \rightarrow 51(1) \rightarrow 40(1) \rightarrow 29(1) \rightarrow 18(1) \rightarrow 7(1) \rightarrow 8(1) \rightarrow 9(1) 
+\rightarrow 10(1) \rightarrow 11(1) \rightarrow 22(1) \rightarrow 21(1) \rightarrow 20(1) \rightarrow 19(1) \rightarrow 30(1) \rightarrow 31(1) 
+\rightarrow 32(1) \rightarrow 33(1) \rightarrow 44(1) \rightarrow 43(1) \rightarrow 42(1) \rightarrow 41(1) \rightarrow 52(1) \rightarrow 53(1) 
+\rightarrow 54(1) \rightarrow 55(1) \rightarrow 65(1) \rightarrow 64(1) \rightarrow 63(1) \rightarrow 62(1) \rightarrow 73(1) \rightarrow 74(1) 
+\rightarrow 75(1) \rightarrow 76(1) \rightarrow 87(1) \rightarrow 86(1) \rightarrow 85(1) \rightarrow 84(1) \rightarrow 83(1) \rightarrow 94(1) 
+\rightarrow 93(1) \rightarrow 92(1) \rightarrow 91(1) \rightarrow 90(1) \rightarrow 89(1) \rightarrow 88(1) \rightarrow 99(1) \rightarrow 100(1) 
+\rightarrow 101(1) \rightarrow 102(1) \rightarrow 103(1) \rightarrow 104(1) \rightarrow 105(1) \rightarrow 106(1) \rightarrow 95(1) 
+\rightarrow 96(1) \rightarrow 97(1) \rightarrow 98(1) \rightarrow 109(1) \rightarrow 108(1) \rightarrow 107(1) \rightarrow 118(1) 
+\rightarrow 117(1) \rightarrow 116(1) \rightarrow 115(1) \rightarrow 114(1) \rightarrow 113(1) \rightarrow 112(1) \rightarrow 111(1) 
+\rightarrow 110(1) \rightarrow 99(1) \rightarrow 88(1) \rightarrow 77(1) \rightarrow 66(1) \rightarrow 56(1) \rightarrow 45(1) \rightarrow 34(1) 
+\rightarrow 23(1) \rightarrow 12(1) \rightarrow 1(1) \rightarrow 2(1) \rightarrow 3(1) \rightarrow 4(1) \rightarrow 5(1) \rightarrow 6(1) 
+\rightarrow 7(1) \rightarrow 8(1) \rightarrow 9(1) \rightarrow 10(1) \rightarrow 11(1) \rightarrow 22(1) \rightarrow 21(1) \rightarrow 20(1) 
+\rightarrow 19(1) \rightarrow 18(1) \rightarrow 17(1) \rightarrow 16(1) \rightarrow 15(1) \rightarrow 14(1) \rightarrow 13(1) \rightarrow 24(1) 
+\rightarrow 25(1) \rightarrow 26(1) \rightarrow 27(1) \rightarrow 28(1) \rightarrow 29(1) \rightarrow 30(1) \rightarrow 31(1) \rightarrow 32(1) 
+\rightarrow 33(1) \rightarrow 44(1) \rightarrow 43(1) \rightarrow 42(1) \rightarrow 41(1) \rightarrow 40(1) \rightarrow 39(1) \rightarrow 38(1) 
+\rightarrow 37(1) \rightarrow 36(1) \rightarrow 35(1) \rightarrow 46(1) \rightarrow 47(1) \rightarrow 48(1) \rightarrow 49(1) \rightarrow 50(1) 
+\rightarrow 51(1) \rightarrow 52(1) \rightarrow 53(1) \rightarrow 54(1) \rightarrow 55(1) \rightarrow 65(1) \rightarrow 64(1) \rightarrow 63(1) 
+\rightarrow 62(1) \rightarrow 61(1) \rightarrow 72(1) \rightarrow 71(1) \rightarrow 70(1) \rightarrow 60(1) \rightarrow 59(1) \rightarrow 58(1) 
+\rightarrow 57(1) \rightarrow 67(1) \rightarrow 68(1) \rightarrow 69(1) \rightarrow 80(1) \rightarrow 79(1) \rightarrow 78(1) \rightarrow 89(1) 
+\rightarrow 90(1) \rightarrow 91(1) \rightarrow 92(1) \rightarrow 81(1) \rightarrow 82(1) \rightarrow 83(1) \rightarrow 84(1) \rightarrow 73(1) 
+\rightarrow 74(1) \rightarrow 75(1) \rightarrow 76(1) \rightarrow 87(1) \rightarrow 86(1) \rightarrow 85(1) \rightarrow 96(1) \rightarrow 95(1) 
+\rightarrow 94(1) \rightarrow 93(1) \rightarrow 104(1) \rightarrow 103(1) \rightarrow 102(1) \rightarrow 101(1) \rightarrow 100(1) 
+\rightarrow 99(1) \rightarrow 110(1) \rightarrow 111(1) \rightarrow 112(1) \rightarrow 113(1) \rightarrow 114(1) \rightarrow 115(1) 
+\rightarrow 116(1) \rightarrow 105(1) \rightarrow 106(1) \rightarrow 107(1) \rightarrow 108(1) \rightarrow 97(1) \rightarrow 98(1) 
+\rightarrow 109(1) \rightarrow 120(1) \rightarrow 119(1) \rightarrow 118(1) \rightarrow 117(1) \rightarrow 118(1) \rightarrow 119(1) 
+\rightarrow 108(1) \rightarrow 118(1) \rightarrow 120(1) 
+$
+
+\subsection{Beispiel 3 (BWINF)}\label{example:3}
 Textdatei: \texttt{stromrallye3.txt}\\
 
-\fbox{Die Spielsituation ist nicht lösbar.}
+\noindent
+\fbox{Die Spielsituation ist nicht lösbar.}\\
 
-\subsection{Beispiel 4 (BWINF)}
+\noindent
+Zeit: 0 min 0 s
+
+\subsection{Beispiel 4 (BWINF)}\label{example:4}
 Textdatei: \texttt{stromrallye4.txt}\\
 
+\noindent
 \fbox{Die Spielsituation ist lösbar.}\\
 
-\subsection{Beispiel 5 (BWINF)}
+\noindent
+Zeit: 0 min 0 s\\
+
+\noindent
+$0 \rightarrow -1(20)$
+
+\subsection{Beispiel 5 (BWINF)}\label{example:5}
 Textdatei: \texttt{stromrallye5.txt}\\
 
-\fbox{Die Spielsituation ist nicht lösbar.}
+\noindent
+\fbox{Die Spielsituation ist nicht lösbar.}\\
 
-\subsection{Beispiel 6}
+\noindent
+Zeit: 16 min 59 s
+
+\subsection{Beispiel 6}\label{example:6}
 Textdatei: \texttt{stromrallye6.txt}\\
+Besonderheit: eine Kopie des Beipsiels \ref{example:3}, aber die Batterie auf dem Feld (6, 2) besitzt eine Ladung von 4\\
 
+\noindent
 \fbox{Die Spielsituation ist lösbar.}\\
 
-0(0) 2(9) 1(9) 3(2) 3(2) 3(2) 1(2) -1(1)
+\noindent
+Zeit: 0 min 0 s\\
 
-\subsection{Beispiel 7}
+\noindent
+$0 \rightarrow2(9) \rightarrow 1(9) \rightarrow 3(2) \rightarrow 3(2) \rightarrow 3(2) \rightarrow 1(2) \rightarrow -1(1)$
+
+\noindent
+\subsection{Beispiel 7}\label{example:7}
 Textdatei: \texttt{stromrallye7.txt}\\
+Besonderheit: eine Kopie des Beipsiels \ref{example:5} mit einer zusätzlichen Batterie auf dem Feld (2, 16) mit einer Ladung von 1\\
 
+\noindent
 \fbox{Die Spielsituation ist lösbar.}\\
 
-0(0) 1(4) 3(7) 4(2) 3(10) 2(3) 1(4) 5(6) 5(2) 12(10) 6(3) 6(2) 7(2) 8(2) 9(2) 10(2) 11(2) 13(1) 14(1) 15(1) 16(1) 17(1) 18(1) 19(1) 20(3) 21(1) 22(1) 23(1) 24(1) 25(1) 28(1) 27(1) 26(1) 27(1) 30(1) 31(1) 30(1) 33(1) 34(1) 35(1) 32(1) 29(1) -1(1)
+\noindent
+Zeit: 9 min 16 s\\
+
+\noindent
+$0 \rightarrow 1(4) \rightarrow 3(7) \rightarrow 4(2) \rightarrow 3(10) \rightarrow 2(3) \rightarrow 1(4) \rightarrow 5(6) \rightarrow 5(2) 
+\rightarrow 12(10) \rightarrow 6(3) \rightarrow 6(2) \rightarrow 7(2) \rightarrow 8(2) \rightarrow 9(2) \rightarrow 10(2) \rightarrow 11(2) 
+\rightarrow 13(1) \rightarrow 14(1) \rightarrow 15(1) \rightarrow 16(1) \rightarrow 17(1) \rightarrow 18(1) \rightarrow 19(1) \rightarrow 20(3) 
+\rightarrow 21(1) \rightarrow 22(1) \rightarrow 23(1) \rightarrow 24(1) \rightarrow 25(1) \rightarrow 28(1) \rightarrow 27(1) \rightarrow 26(1) 
+\rightarrow 27(1) \rightarrow 30(1) \rightarrow 31(1) \rightarrow 30(1) \rightarrow 33(1) \rightarrow 34(1) \rightarrow 35(1) \rightarrow 32(1) 
+\rightarrow 29(1) \rightarrow -1(1) $
+
+\subsection{Beispiel 8}\label{example:8}
+Textdatei: \texttt{stromrallye8.txt}\\
+Besonderheit: ein anhand des selbst gebauten Generators generiertes Beispiel\\
+
+\noindent
+\fbox{Die Spielsituation ist lösbar.}\\
+
+\noindent
+Zeit: 0 min 0 s\\
+
+\noindent
+$0 \rightarrow3(2) \rightarrow 1(3) \rightarrow 1(2) \rightarrow 2(3) \rightarrow 4(6) \rightarrow 5(4) \rightarrow 5(2) \rightarrow 5(2)
+\rightarrow 5(2) \rightarrow 5(2) \rightarrow 5(2) \rightarrow 5(2) \rightarrow 5(2) \rightarrow 5(2)$
 
 
 \newpage

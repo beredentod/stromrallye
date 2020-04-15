@@ -30,15 +30,20 @@ private:
 	vector<iPair> results;
 	vector<iPair> foundPath;
 
-public:
-	Backtracking(Graph &graph)
+	void retrieveAll(Graph &graph)
 	{
 		IDToBattery = graph.retrieveIDToBattery();
 		batteryToID = graph.retrieveBatteryToID();
 		start = graph.retrieveStart();
 		dist = graph.retrieveDistances();
 		distAux = graph.retrieveDistancesAux();
-		extraTiles = graph.retrieveExtraTiles();
+		extraTiles = graph.retrieveExtraTiles();		
+	}
+
+public:
+	Backtracking(Graph &graph)
+	{
+		retrieveAll(graph);
 
 		map<int, Battery>::iterator it = IDToBattery.begin();
 		for (; it != IDToBattery.end(); it++)
@@ -47,9 +52,9 @@ public:
 		int startCharge = startStatus[start.getInputID()];
 		startStatus[start.getInputID()] = 0;
 
-		for (auto x: startStatus)
+		/*for (auto x: startStatus)
 			cout<<x<<" ";
-		cout<<"\n";
+		cout<<"\n";*/
 		results.pb(mp(0,0));
 		bool found;
 
@@ -59,9 +64,22 @@ public:
 
 		if (found)
 		{
-			cout<<"\nDer gefundene Pfad:\n";
+			cout<<"\nDer gefundene Pfad:\n0 ";
+
 			for (auto x: foundPath)
-				printf("%d(%d) ", x.first, x.second);
+			{
+				if (x.first != 0)
+					printf("→  %d(%d) ", x.first, x.second);
+			}
+			cout<<"\n";
+
+			cout<<"\nLatex:\n0 ";
+
+			for (auto x: foundPath)
+			{
+				if (x.first != 0)
+					printf("\\rightarrow %d(%d) ", x.first, x.second);
+			}
 			cout<<"\n";
 		}
 		else
@@ -74,13 +92,14 @@ public:
     	ms -= duration_cast<milliseconds>(secs);
     	auto mins = duration_cast<minutes>(secs);
     	secs -= duration_cast<seconds>(mins);
+
     	printf("Zeit: %ld min %ld s\n", mins.count(), secs.count());
 	}
 	~Backtracking(void){}
 
 
-	bool next(int id, int charge, vector<int>& status, vector<iPair>& result);
-	vector<pair<int,int>> checkReachability (int id, int charge, vector<int>& currCharges);
+	bool next(int id, int charge, vector<int> &status, vector<iPair> &result);
+	vector<pair<int,int>> checkReachability (int id, int charge, vector<int> &currCharges);
 
 
 };
