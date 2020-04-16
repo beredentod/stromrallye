@@ -23,65 +23,69 @@ Battery Graph::convertInput(string data)
 
 void Graph::readFile (string $FILENAME)
 {
-	ifstream file;
+	ifstream file($FILENAME);
 	string data;
 
-	file.open($FILENAME);
-	file>>data;
-
-	boardDimension = stoi(data);
-
-	for (int i=0; i<=boardDimension; i++)
-	{
-		vector<int> v(boardDimension+1);
-		board.pb(v);
-	}
-	
-	file>>data;
-	start = convertInput(data);
-	start.setInputID(0);
-	int boardID = (start.getY()-1) * boardDimension + start.getX()-1;
-	start.setBoardID(boardID);
-
-	batteryToBoardID[start] = boardID;
-	boardIDToBattery[boardID] = start;
-	batteryToInputID[start] = 0;
-	inputIDToBattery[0] = start;
-
-	batteries.insert(start);
-	board[start.getY()][start.getX()] = start.getCharge();
-
-
-	file>>data;
-	int batt = stoi(data);
-	for (int i=1; i<=batt; i++)
+	if (file.is_open())
 	{
 		file>>data;
-		Battery a = convertInput(data);
-		a.setInputID(i);
-		boardID = (a.getY()-1) * boardDimension + a.getX()-1;
-		a.setBoardID(boardID);
 
-		batteryToBoardID[a] = boardID;
-		boardIDToBattery[boardID] = a;
-		batteryToInputID[a] = i;
-		inputIDToBattery[i] = a;
+		boardDimension = stoi(data);
 
-		batteries.insert(a);
-		board[a.getY()][a.getX()] = a.getCharge();
+		for (int i=0; i<=boardDimension; i++)
+		{
+			vector<int> v(boardDimension+1);
+			board.pb(v);
+		}
+		
+		file>>data;
+		start = convertInput(data);
+		start.setInputID(0);
+		int boardID = (start.getY()-1) * boardDimension + start.getX()-1;
+		start.setBoardID(boardID);
+
+		batteryToBoardID[start] = boardID;
+		boardIDToBattery[boardID] = start;
+		batteryToInputID[start] = 0;
+		inputIDToBattery[0] = start;
+
+		batteries.insert(start);
+		board[start.getY()][start.getX()] = start.getCharge();
+
+
+		file>>data;
+		int batt = stoi(data);
+		for (int i=1; i<=batt; i++)
+		{
+			file>>data;
+			Battery a = convertInput(data);
+			a.setInputID(i);
+			boardID = (a.getY()-1) * boardDimension + a.getX()-1;
+			a.setBoardID(boardID);
+
+			batteryToBoardID[a] = boardID;
+			boardIDToBattery[boardID] = a;
+			batteryToInputID[a] = i;
+			inputIDToBattery[i] = a;
+
+			batteries.insert(a);
+			board[a.getY()][a.getX()] = a.getCharge();
+		}
+
+		numBat = batt;
+
+		for (int i=0; i <= numBat; i++)
+		{
+			vector<int> v;
+			distances.pb(v);
+			distancesAux.pb(v);
+			extraTiles.pb(0);
+		}
+
+		file.close();
 	}
-
-	numBat = batt;
-
-	for (int i=0; i <= numBat; i++)
-	{
-		vector<int> v;
-		distances.pb(v);
-		distancesAux.pb(v);
-		extraTiles.pb(0);
-	}
-
-	file.close();
+	else
+		throw runtime_error("Die Datei mit der eingegebenen Nummer wurde nicht gefunden.\n");
 }
 
 void Graph::determineConnections()
@@ -233,37 +237,3 @@ bool Graph::checkTwoTiles(Battery b)
 	}
 	return 0;
 }
-
-/*vector<int> Graph::checkReachability (Battery b)
-{
-	int charge = b.getCharge();
-	int ID = b.getInputID();
-
-	vector<int> reach;
-
-	for (int i=1;i<distances[ID].size();i++)
-	{
-		if (i == ID)
-		{
-			if (charge%2==0 && extraTiles[ID] > 0)
-				reach.pb(i);
-		}
-		else
-		{
-			if (distances[ID][i] <= charge && distances[ID][i] != 0)
-			{
-				reach.pb(i);
-				/*if (distances[ID][i] < 3)
-				{
-					if (distancesAux[ID][i] > 0)
-						cout<<"There is another way from "<<ID<<" to "<<i<<" of cost "<<distancesAux[ID][i]<<"\n";
-					else
-						cout<<"There is no other way from "<<ID<<" to "<<i<<"\n";
-				}
-			}
-		}
-	}
-
-	return reach;
-}
-*/

@@ -8,9 +8,15 @@ vector<int> Generator::generateOrder()
 	stack<int> help;
 	num.pb(0);
 
+    uniform_real_distribution<double> dis(0,1);
+
+	vector<int> generated;
+	for (int i=1; i < batNum; i++)
+		generated.pb(round(dis(rd)));
+
 	for (int i=1; i < batNum; i++)
 	{
-		int situation  = rand()%2;
+		int situation = generated[i-1];
 
 		if (situation == 0) //append
 		{
@@ -32,10 +38,27 @@ vector<int> Generator::generateOrder()
 	return num;
 }
 
-vector<int> Generator::generateDistances(vector<int> &v)
+pair<vector<int>, vector<iPair>> Generator::generateDistances(vector<int> &v)
 {
+	uniform_real_distribution<double> dis(1,5);
+
 	vector<int> num;
 	stack<iPair> help;
+
+	vector<bool> vis;
+	vector<iPair> coor;
+	vector<int> prev;
+	set<iPair> used;
+
+	for (int i =0; i < batNum; i++)
+	{
+		vis.pb(0);
+		coor.pb(mp(-1,-1));
+		prev.pb(-1);
+	}
+
+	coor[0] = (mp(0,0));
+
 
 	for (int i=0; i < v.size()-1; i++)
 	{
@@ -43,6 +66,87 @@ vector<int> Generator::generateDistances(vector<int> &v)
 		int nextIndex = v[i+1];
 
 		int dist = rand()%5 + 1;
+
+		int nextDist;
+
+		if (!help.empty() && help.top().first == nextIndex)
+			nextDist = help.top().second;
+		else
+			nextDist = dist;
+
+		if (!vis[nextIndex])
+		{
+			iPair prevPoint = coor[v[i]];
+			int currDist = nextDist;
+			int x,y;
+			bool all;
+
+			do
+			{
+				vector<bool> free;
+				for (int i=0;i<4*currDist;i++)
+					free.pb(0);
+
+				do
+				{
+					int coorID = rand()%(4*currDist);
+
+					int quarter = coorID/currDist;
+					if (quarter == 0)
+					{
+						int rest = coorID - currDist*quarter;
+						x = rest + 1;
+						y = abs(currDist - x);
+						x += prevPoint.first;
+						y += prevPoint.second;
+					}
+					else if (quarter == 1)
+					{
+						int rest = coorID - currDist*quarter;
+						x = rest + 1;
+						y = abs(currDist - x);
+						y = -y;
+						x += prevPoint.first;
+						y += prevPoint.second;
+					}
+					else if (quarter == 2)
+					{
+						int rest = coorID - currDist*quarter;
+						x = rest + 1;
+						y = abs(currDist - x);
+						x = -x;
+						x += prevPoint.first;
+						y += prevPoint.second;
+					}
+					else if (quarter == 3)
+					{
+						int rest = coorID - currDist*quarter;
+						x = rest + 1;
+						y = abs(currDist - x);
+						x = -x;
+						y = -y;
+						x += prevPoint.first;
+						y += prevPoint.second;
+					}
+
+					free[coorID] = 1;
+
+					all = true;
+					for (auto x: free)
+						if (!x) all = false;
+
+				} while (used.find(mp(x,y)) != used.end() && !all);
+
+				dist = currDist;
+				currDist++;
+
+			} while (all);
+
+			coor[nextIndex] = mp(x,y);
+			used.insert(mp(x,y));
+
+			vis[nextIndex] = true;
+		} 
 
 		if (!help.empty() && help.top().first == nextIndex)
 		{
@@ -56,7 +160,24 @@ vector<int> Generator::generateDistances(vector<int> &v)
 		}
 	}	
 
-	return num;
+	int minimal = INT_MAX;
+	
+	for (auto x: coor)
+	{
+		minimal = min(minimal, x.first);
+		minimal = min(minimal, x.second);
+	}
+
+	minimal = -minimal;
+	minimal += 2;
+
+	for (int i=0;i<coor.size();i++)
+	{
+		coor[i].first += minimal;
+		coor[i].second += minimal;
+	}
+
+	return mp(num, coor);
 }
 
 vector<int> Generator::generateCharges(vector<int> &v, vector<int> &dist)
@@ -68,7 +189,7 @@ vector<int> Generator::generateCharges(vector<int> &v, vector<int> &dist)
 	{
 		for (int i=0; i < v.size(); i++)
 		{
-			int currID = v[i];
+			int nextIndex = v[i];
 			int currDist = dist[i];
 
 			if (ch[v[i]] == 0)
@@ -87,7 +208,7 @@ vector<int> Generator::generateCharges(vector<int> &v, vector<int> &dist)
 		if (ch[i] == 0)
 		{
 			int multip = rand()%3+1; 
-			ch[i] += 2*multip;		
+			ch[i] += 2*multip;	
 		}
 		else
 		{
@@ -99,7 +220,7 @@ vector<int> Generator::generateCharges(vector<int> &v, vector<int> &dist)
 	return ch;
 }
 
-vector<iPair> Generator::setCoordinates(vector<int> &v, vector<int> &dist)
+/*vector<iPair> Generator::setCoordinates(vector<int> &v, vector<int> &dist)
 {	
 	vector<bool> vis(batNum);
 
@@ -113,12 +234,12 @@ vector<iPair> Generator::setCoordinates(vector<int> &v, vector<int> &dist)
 
 	for (int i=1; i < v.size(); i++)
 	{
-		int currID = v[i];
+		int nextIndex = v[i];
 
-		if (!vis[currID])
+		if (!vis[nextIndex])
 		{
 			iPair prevPoint = coor[v[i-1]];
-			prev[currID] = v[i-1];
+			prev[nextIndex] = v[i-1];
 
 			int currDist = dist[i-1];
 
@@ -139,10 +260,10 @@ vector<iPair> Generator::setCoordinates(vector<int> &v, vector<int> &dist)
 
 			} while (used.find(mp(x,y)) != used.end());
 
-			coor[currID] = mp(x,y);
+			coor[nextIndex] = mp(x,y);
 			used.insert(mp(x,y));
 
-			vis[currID] = 1;
+			vis[nextIndex] = 1;
 		} 
 	}
 
@@ -164,7 +285,7 @@ vector<iPair> Generator::setCoordinates(vector<int> &v, vector<int> &dist)
 	}
 
 	return coor;
-}
+}*/
 
 void Generator::prepareOutput(vector<int> &ch, vector<iPair> &coor)
 {

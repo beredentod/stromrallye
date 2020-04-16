@@ -3,17 +3,41 @@
 #include "graph.h"
 #include "backtracking.h"
 
+//eine Funktion, die uns hilft, ein Array von tuple absteigend zu sortieren
 bool sortdesc(const tuple<int, int, int>& a,  const tuple<int, int, int>& b) 
 { 
     return (get<0>(a) > get<0>(b)); 
 } 
 
+
+//die rekursive Funktion, die alle Moeglichkeiten ausprobiert
+// id - Eingabeindex einer Batterie
+// charge - die aktuelle Ladung
+// status - das Array mit allen Ladungen jeweiliger Batterie; Array C
+// result - das Array mit dem aktuellen Pfad vom Ursprung, Array R
 bool Backtracking::next (int id, int charge, vector<int>& status, vector<iPair> &result)
 {
+	//das Array mit allen von id aus erreichbaren Batterien; Array N_id
 	vector<pair<int,int>> neighbors = checkReachability(id, charge, status);
 
+	//der terminierende Fall
+	//wenn die Liste von erreichbaren Batterien leer ist
 	if (neighbors.empty())
 	{
+		if (charge == 0)
+		{
+			bool all = 1;
+			for (auto batt: status)
+				if (batt > 0) all = 0;
+
+			if (all) 
+			{
+				foundPath = result;
+				return 1;
+			}
+
+			return 0;
+		}
 		if (extraTiles[id] > 1)
 		{
 			result.pb(mp(-1, charge));
@@ -85,6 +109,7 @@ bool Backtracking::next (int id, int charge, vector<int>& status, vector<iPair> 
 		}
 	}
 
+	//der Fall, wenn die Liste nicht leer ist
 	for (auto x: neighbors)
 	{
 		int neighID = x.first;
@@ -106,7 +131,7 @@ bool Backtracking::next (int id, int charge, vector<int>& status, vector<iPair> 
 		{
 			if (distAux[id][neighID] > 2)
 			{
-				int nextDist = minDist + 2;
+				int nextDist = distAux[id][neighID] + 2;
 				while (charge >= nextDist)
 				{
 					neighDistances.pb(nextDist);
@@ -123,7 +148,7 @@ bool Backtracking::next (int id, int charge, vector<int>& status, vector<iPair> 
 			vector<iPair> cpresult = result;
 
 			cpstatus[neighID] = charge - y;
-			cpresult.pb(mp(neighID, y));
+			cpresult.pb(mp(neighID, y));	
 
 			bool found = next(neighID, nextCharge, cpstatus, cpresult);
 
@@ -132,36 +157,47 @@ bool Backtracking::next (int id, int charge, vector<int>& status, vector<iPair> 
 			else
 				cpresult.pop_back();
 		}
-		
 	}
 
 	return 0;
 }
 
+
+//eine Funktion, die die erreichbaren Batterien von einer Batterie ID aus bestimmt
+// ID - Eingabeindex einer Batterie
+// charge - die aktuelle Ladung
+// currCharges - das aktuelle Array C (=status)
 vector<pair<int,int>> Backtracking::checkReachability (int ID, int charge, vector<int>& currCharges)
 {
+	//ein Array mit Eingabeindizes mit minimalen Entfernungen
 	vector<pair<int,int>> reach;
+	//ein Array, das zu sortieren wird
 	vector<tuple<int, int, int>> poss;
 
 	for (int i=1;i<dist[ID].size();i++)
 	{
+		//der Fall mit Schleifen
 		if (i == ID)
 		{
+			//es wird ueberprueft, ob eine Schleife gemacht werden kann
 			if (extraTiles[ID] > 0 && charge >= 2)
 				reach.pb(mp(i, extraTiles[ID]));
 		}
 		else
 		{
+			//es wird ueberprueft, ob eine Batterie i erreicht werden kann
 			if (dist[ID][i] <= charge && dist[ID][i] != 0 && currCharges[i] > 0)
 				poss.pb(make_tuple(currCharges[i], i, dist[ID][i]));
 		}
 	}
 
+	//poss wird absteigend sortiert
 	sort(poss.begin(), poss.end(), sortdesc);
 
+	//nur die Eingabeindizes und die minimalen Entfernungen werden gespeichert
 	for (auto x: poss)
 		reach.pb(mp(get<1>(x), get<2>(x)));
 
+	//das Array mit allen erreichbaren Batterien wird ausgegeben
 	return reach;
 }
-

@@ -23,7 +23,7 @@ int main ()
 		Generator gen(num);
 
 		cout << "Geben Sie bitte eine Nummer für das generierte Beispiel: ";
-		int nummer;
+		int nummer = 1000;
 		cin>>nummer;
 
 		string $PATH = "../output/stromrallye"+to_string(nummer)+".txt";

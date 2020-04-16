@@ -64,47 +64,8 @@ public:
 	{
 		readFile(filename);
 		preprocess();
-
-		/*for (int i = 1; i <= board.size(); i++)
-		{
-			for (int j=1; j < board[i].size();j++)
-				cout<<board[i][j]<<" ";
-			cout<<"\n";
-		}*/
-
-		/*for (auto x: batteries)
-		{
-			vector<int> v = checkReachability(x);
-			reachable[x.getInputID()].swap(v);
-		}*/
-
-		/*for (int i=0;i<reachable.size();i++)
-		{
-			cout<<i<<":\t";
-			for (auto x: reachable[i])
-				cout<<x<<" ";
-			cout<<"\n";
-		}
-		cout<<"\n\n";*/
-
-		/*cout<<"\t";
-		for (int j=0;j<batteries.size();j++)
-			cout<<j<<" ";
-		cout<<"\n";
-
-		for (int i=0;i<distances.size();i++)
-		{
-			cout<<i<<":\t";
-			for (int j=0;j<distances[i].size();j++)
-			{
-				cout <<distances[i][j]<<" ";
-			}
-			cout<<"\n";
-		}*/
 	}
 	~Graph(void){}
-
-	//vector<int> checkReachability(Battery b);
 
 	Battery 			retrieveStart()			{return start;}
 	vector<vector<int>> retrieveDistances() 	{return distances;}

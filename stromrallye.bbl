@@ -1,0 +1,63 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 2.9 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated as
+% required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+\datalist[entry]{nty/global//global/global}
+  \entry{cormen:BFS}{book}{}
+    \name{author}{4}{}{%
+      {{hash=CT}{%
+         family={Cormen},
+         familyi={C\bibinitperiod},
+         given={T.H.},
+         giveni={T\bibinitperiod},
+      }}%
+      {{hash=LC}{%
+         family={Leiserson},
+         familyi={L\bibinitperiod},
+         given={C.E.},
+         giveni={C\bibinitperiod},
+      }}%
+      {{hash=RR}{%
+         family={Rivest},
+         familyi={R\bibinitperiod},
+         given={R.L.},
+         giveni={R\bibinitperiod},
+      }}%
+      {{hash=SC}{%
+         family={Stein},
+         familyi={S\bibinitperiod},
+         given={C.},
+         giveni={C\bibinitperiod},
+      }}%
+    }
+    \list{publisher}{1}{%
+      {MIT Press}%
+    }
+    \strng{namehash}{CT+1}
+    \strng{fullhash}{CTLCRRSC1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{C}
+    \field{sortinithash}{C}
+    \field{isbn}{9780262533058}
+    \field{pages}{597}
+    \field{series}{Introduction to Algorithms}
+    \field{title}{Introduction To Algorithms. Third edtition.}
+    \field{year}{2009}
+  \endentry
+\enddatalist
+\endinput

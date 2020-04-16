@@ -1,7 +1,8 @@
 \documentclass[a4paper,10pt,ngerman]{scrartcl}
 \usepackage{babel}
 \usepackage[T1]{fontenc}
-\usepackage[utf8x]{inputenc}
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
 \usepackage[a4paper,margin=2.5cm,footskip=0.5cm]{geometry}
 
 % Die nächsten drei Felder bitte anpassen:
@@ -25,7 +26,10 @@
 % Für mathematische Befehle und Symbole
 \usepackage{amsmath}
 \usepackage{amssymb}
-\usepackage{cite}
+%\usepackage{cite}
+
+\usepackage[backend=bibtex]{biblatex}
+\addbibresource{stromrallye.bib}
 
 \usepackage{hyperref}
 \hypersetup{
@@ -407,15 +411,30 @@ Wenn $N_{id}$ leer ich prüfe ich auch, ob $T_{id} = 1$. Wenn ja, können wir di
 indem wir zu einem batteriefreien Feld übergehen. Danach prüfen wir, ob das Array $C$ an allen Stellen 0 enthält und die
 aktuelle Ladung 0 beträgt. Wenn ja, ist unser Ergebnis ebenfalls $R$. Der boolsche Wert 1 wird ausgegeben. Andernfalls wird
 der boolsche Wert 0 ausgegeben.\\
-Anschließend, wenn $N_{id}$ leer ist und es keine adjazenten batteriefreien Felder gibt,  
+Anschließend, wenn $N_{id}$ leer ist und es keine adjazenten batteriefreien Felder gibt, sammle ich alle erreichbaren Batterien von $id$ aus.
+Ich sortiere sie absteigend nach Entfernung. Danach iteriere ich durch sie. Wenn es eine Entfernung gibt, deren Länge größer ist als 2, kann ich 
+die ganze restliche aktuelle Ladung verbrauchen. Andernfalls kann ich nur so viel Ladung verbrauchen, wie lang die längste Entfernung ist.
+Danach wird geprüft, ob alle Ladungen in $C$ 0 betragen und die aktuelle Ladung gleich 0 ist. Wenn ja, dann ist $R$ unser Ergebnis und 1 wird ausgegeben. Andernfalls wird 0 ausgegeben.\\
+Nun beschreibe ich, was man macht, wenn $N_{id}$ nicht leer ist. Wir iterieren durch $N_{id}$. Jeden iterierten Nachbarn nenne ich $i$.
+Ich bilde ein Array $D$, in dem die möglichen Entfernungen, also nicht nur die minimale, gespeichert werden. Als erste Entfernung
+füge ich natürlich die minimale Entfernung von $id$ zu $i$. Danach überprüfe ich, ob diese minimale Entfernung größer ist als 2.
+Wenn ja, füge ich in $D$ die Summen von der minimalen Entfernung und vom nächsten Vielfachen von 2 ein, so lange eine solche Summe nicht
+größer ist als die aktuelle Ladung. Wenn nicht, prüfe ich den Wert $A'_{id, i}$, ob er mindestens 3 beträgt.
+Wenn ja, füge ich in $D$ die Summen von $A'_{id, i}$ und vom nächsten Vielfachen von 2 ein, so lange eine solche Summe nicht
+größer ist als die aktuelle Ladung.\\
+Danach iteriere ich durch $D$. Jede iterierte Entfernung nenne ich hier $j$. Ich speichere den Wert an der Stelle $i$ im Array $C$ als $l$.
+Ich kopiere $C$ als $C'$ und $R$ als $R'$. Im Array $C'$ speichere ich an der Stelle $i$ die Differenz von der aktuellen Ladung und $j$.
+Ich füge $i$ mit der Anzahl von Schritten $j$ in $R'$ ein. Nun lasse ich die rekursive Funktion mir folgenden Parametern laufen:
+dem Eingabeindex, $l$ als neue aktuelle Ladung, das Array $C'$ und das Array $R'$.\\
+Wenn der augegebene boolsche Wert 1 ist, wird auch 1 ausgegeben und die Funktion bricht ab. Wenn nicht, wird das letzte Element
+aus dem Array $D$ entfernt und die Entfernung $j+1$ wird betrachtet.\\
 
-
-Die erste aktuelle Ladung ist natürlich die Ladung der Batterie $s$, das heißt, der Startbatterie. An dieser Stelle
-setzen wir im Array $C$ an der Stelle $0$ den Wert 0.\\
-Wir lassen diese Funktion mit folgenden Parametern laufen: 0 als Eingabeindex, die aktuelle Ladung der Batterie $s$, 
-
-
-
+Ganz am Anfang ist die erste aktuelle Ladung natürlich die Ladung der Batterie $s$, das heißt, der Startbatterie. An dieser Stelle
+setzen wir im Array $C$ an der Stelle $0$ den Wert 0. Auch wird 0 am Ende des Arrays $R$ angehängt.
+Danach lassen wir unsere rekursive Funktion mit folgenden Parametern laufen: 0 als Eingabeindex, die aktuelle Ladung der Batterie $s$, 
+das Array $C$ und das Array $R$.
+Wenn der ausgegebene boolsche Wert 1 beträgt, wird die Folge von Schritten im gefundenen Pfad aussgegeben. Andernfalls erfolgt
+eine Meldung, dass kein solcher Pfad gefunden wurde.
 
 \subsection{Laufzeit}\label{sec:time}
 
@@ -428,20 +447,48 @@ Vorbereitung der Tabellen $A$ und $A'$:
   \item Bildung des Graphen: $O(l^2)$\\
   Zuordnung der Brettindizes und Esrstellung der Menge $E$: $O(l^2)$.
   \item Breitensuche: $O(b*l)$\\
-  Die Laufzeit vom Breitensuchealgorithmus ist $O(V + E)$, $V = l$ und $E \leqslant 4*l$: $O(l+l)$.\\
+  Die Laufzeit vom Breitensuchealgorithmus ist $O(V + E)$,\cite{cormen:BFS}  $V = l$ und $E \leqslant 4*l$: $O(l+l)$.\\
   Der Algorithmus wird auf jeder Batterie angewendet: $O(b*l)$.
   \item Bestimmung der Schleifen in Knoten: $O(b)$\\
-  Für jede Batterie werden die Schleifen in Knoten bestimmt, eine solche Bestimmu läuft in $O(1)$,
+  Für jede Batterie werden die Schleifen in Knoten bestimmt, eine solche Bestimmung läuft in $O(1)$,
   also für alle Batterien: $O(b)$.
 \end{itemize}
 
+Wir addieren zusammen:\\
+$O(b) + O(l^2) + O(b*l) + O(b) = O(l^2 + b*l + 2b) \in O(l^2 + b*l)$\\
 
+Backtracking:
+\begin{itemize}
+  \item 
+\end{itemize}
+
+\newpage
 \subsection{Generierung von Spielsituationen}
-\subsubsection{Idee}
+Beim Lösen dieses Problems lesen wir die Koordinaten der Batterien ein, bestimmen die Entfernungen zwischen ihnen,
+lassen den rekursiven Algorihtmus laufen und am Ende bekommen wir einen Pfad aus der Wurzel in $s$ mit einer Folge von
+Schritten zwischen Baterrien. Beim Generieren von solchen Spielsituation gehen genau andersherum vor.
+Wir generieren zunächst die Folge von Schritten, die zwischen Batterien zu machen sind, sodass die ganze 
+Spielsituation lösbar ist.\\
+Um das Programm unter vielen Umständen nutzbar zu machen, lasse ich den Benutzer eine Anzahl von Batterien $n$ einzugeben.
+Bei der Generierung einer Folge von Schritten unterscheide ich zwischen zwei Situationen:
+\begin{itemize}
+  \item \textit{Hinzufügen} -- in dieser Situation sind Batterien $a$ und $b$ so platziert, 
+    dass wir von $a$ zu $b$ so übergehen, dass die Ladung, die wir bei $a$ finden reicht, um $b$ ohne Verlust an der Ladung
+    zu erreichen. Es ist zu beachten, dass es nicht bedeutet, dass diese Ladung genau der minimalen Entfernung $d_{min}$ von $a$ zu $b$ entspricht.
+    Es kann sich um eine Entfernung $d_{min}+2k$, wobei $k \in \mathbb{N^{+}}$, handeln.
+  \item \textit{Einfügen} -- in dieser Situation handelt es sich darum, dass wir von einer Batterie $a$ zu $b$ übergehen und müssen danach
+   zu
+\end{itemize}
+
+\TODO{TODO: Einfügen ist schwierig und counterintuitive}
+
 \subsubsection{Laufzeit}
 
 
 \subsection{Erweiterungen}
+
+\nocite{*}
+\printbibliography
 
 
 
@@ -545,9 +592,92 @@ Außer diesen Batterien besitzt nur die Batterie, von der wir die Entfernungen m
 Für Schleifen haben wir ja auch das Array \texttt{extraTiles}. Das bedeutet, dass wir in weiteren Betrachtungen
 die Stellen, an denen 0 steht, überhaupt nicht betrachten müssen.
 
+
 \subsection{Die Klasse \texttt{Backtracking}}
+In dieser Klasse werden die Arrays \texttt{distances}, \texttt{extraTiles} und \texttt{distancesAux}
+aus der Klasse \texttt{Graph} abgerufen und als \texttt{dist}, \texttt{extraTiles} und \texttt{distAux} gespeichert.
+Die Startbatterie wird als \texttt{start} gespeichert. Außerdem werden die Map--Container \texttt{batteryToID}
+und \texttt{IDToBattery} aus der Klasse \texttt{Graph} abgerufen, um die Koordinaten der Batterien zuordnen zu können.\\
+Anschließend befindet sich in dieser Klasse ein Array \texttt{foundPath}, das die Folge von Schritten speichert,
+wenn eine Spielsituation lösbar ist.\\
+In dieser Klasse befinden sich auch zwei Methoden: \texttt{checkReachability} und \texttt{next}.\\
+
+Die erste Methode nimmt als Parameter einen Eingabeindex \texttt{id}, eine aktuelle Ladung \texttt{charge}
+und eine Kopie des Arrays $C$ \texttt{currCharges}, also ein Array, das die Ladungen jeder Batterie enthält.\\
+Es werden ein Array \texttt{reach} in Form von \texttt{vector<pair<int, int> >} und ein Array \texttt{poss} in
+Form von \texttt{vector<tuple<int, int, int> >} gebildet. Die beiden haben die gleiche Funktion, aber 
+das zweite wird benutzt, um die Daten auf das erste vorzubereiten.\\
+Es wird die Tabelle \texttt{dist} an der Stelle \texttt{id} iteriert. Jeden interierten Eingabeindex
+einer Batterie nenne ich hier \texttt{i}.
+Wenn \texttt{i} und \texttt{id} gleich sind, prüfe ich, ob \texttt{extraTiles} an der Stelle \texttt{id}
+größer ist als 0 und ob \texttt{charge} mindestens 2 beträgt. Wenn ja, werden \texttt{i} und \texttt{extraTiles}
+an der Stelle \texttt{id} am Ende des Arrays \texttt{reach} angehängt.\\
+Andernfalls, bei allen anderen Batterien, wird geprüft, ob der Wert an der Stelle (\texttt{id}, \texttt{i}) in der Tabelle
+\texttt{dist} nicht größer ist als \texttt{charge}, ob der Wert an der Stelle (\texttt{id}, \texttt{i}) in der Tabelle
+\texttt{dist} nicht 0 beträgt und ob die Ladung an der Stelle \texttt{i} im Array \texttt{currCharges} nicht 0 ist.
+Wenn alle diese Bedingungen gleichzeitig erfüllt sind, hänge ich den Wert an der Stelle \texttt{i} im Array \texttt{currCharges},
+\texttt{i} und den Wert an der Stelle (\texttt{id}, \texttt{i}) im Array \texttt{dist} am Ende des Arrays \texttt{poss} an.\\
+Danach sortiere ich absteigend nach den Werten von \texttt{currChanges} im Array \texttt{poss}. 
+Anschließend vervollständige ich das Array \texttt{reach} mit den sortierten Werten \texttt{i} und den Werten aus \texttt{dist}.
+Dieses fertige Array wird am Ende ausgegeben.\\
+
+Nun kommen wir zur rekursiven Funktion \texttt{next}, die folgende Parameter nimmt: 
+einen Eingabeindex \texttt{id}, eine aktuelle Ladung \texttt{charge}, eine Kopie vom Array $C$ \texttt{status} und eine Kopie des
+Arrays $R$ mit dem Ergebnispfad \texttt{result}.\\
+Wir beginnen mit einem Lauf der Methode \texttt{checkReachability}, die die von der Batterie \texttt{id} aus erriechbaren Batterien
+findet. Diese Liste speichern wir unter \texttt{neighbors}. Nun prüfen wird, ob diese Liste leer ist.
+Wenn ja, haben wir folgende Fallunterscheidungen.\\
+Wenn \texttt{charge} gleich 0 ist, prüfen wir im Array \texttt{status}, ab alle Batterien entladen sind.
+Wenn ja, wird \texttt{foundPath} als \texttt{result} gespeichert und ein boolscher Wert 1 ausgegeben. Andernfalls wird 0 ausgegeben.\\
+Wenn der Wert an der Stelle \texttt{id} im Array \texttt{extraTiles} größer ist als 2, wird am Ende des Arrays \texttt{result}
+-1 mit der restlichen aktuellen Ladung angehängt. Danach wir geprüft, ob alle Ladungen im Arrax \texttt{status} 0 betragen.
+Wenn ja, wird \texttt{foundPath} als \texttt{result} gespeichert und ein boolscher Wert 1 ausgegeben. Andernfalls wird 0 ausgegeben.\\
+Wenn der Wert an der Stelle \texttt{id} im Array \texttt{extraTiles} gleich 1 ist, wird am Ende des Arrays \texttt{result}
+-1 mit dem Wert 1 angehängt. \texttt{charge} wird um 1 verkleinert. Danach wird geprüft, ob alle Ladungen im Arrax \texttt{status} 0 betragen
+und ob \texttt{charge} gleich 0 ist.
+Wenn ja, wird \texttt{foundPath} als \texttt{result} gespeichert und ein boolscher Wert 1 ausgegeben. Andernfalls wird 0 ausgegeben.\\
+In allen anderen Fällen wird nun ein Array \texttt{allNeighbnors} gebildet. In das Array füge ich alle Eingabeindizes und alle
+minimale Entfernungen der Batterien, die erreichbar sind, unabhägig davon, ob sie entladen sind oder nicht.
+Ich sortiere dieses Array absteigend nach den minimlaen Entfernungen.
+Danach iteriere ich durch das Array \texttt{allNeighbors} und wenn ich auf eine minimale Entfernung komme, die
+nicht kleiner ist als 3, hänge ich am Ende des Arrays \texttt{result} ihren entsprechenden Eingabeindex mit der restlichen aktuellen Ladung an.
+Gleichzeitig wird die Iteration abgebrochen.
+Andern falls, wenn ich auf eine minimale Entfernung komme, die kleiner ist als 3, hänge ich am Ende des Arrays \texttt{result} ihren entsprechenden Eingabeindex mit dieser minimalen Länge an. Von \texttt{charge} wird der Wert von dieser minimalen Entfernung abgezogen.
+Gleichzeitig wird die Iteration abgebrochen.\\
+Danach wird geprüft, ob alle Ladungen im Arrax \texttt{status} 0 betragen und ob \texttt{charge} gleich 0 ist.
+Wenn ja, wird \texttt{foundPath} als \texttt{result} gespeichert und ein boolscher Wert 1 ausgegeben. Andernfalls wird 0 ausgegeben.\\
+Nun kommen wir zum Fall, wenn \texttt{neighbors} nicht leer ist. Wir iterieren durch dieses Array.
+Unter \texttt{neighID} speichere ich den iterierten Eingabeindex und unter \texttt{minDist} speichere ich die iterierte minimale Entfernung.
+Ich bilde ein Array \texttt{nieghDistances}, das alle Entfernungen zwischen \texttt{id} und \texttt{neighID} enthält.
+Ich füge zuerst in es \texttt{minDist} ein. Nun wird geprüft, ob \texttt{minDist} größer als 2 ist.
+Wenn ja, wird zu \texttt{minDist} 2 addiert und in \texttt{neighDistances} eingefügt,
+so lange diese neue Summe nicht größer ist als \texttt{charge}.\\
+Wenn nicht, wird überprüft, ob der Wert an der Stelle (\texttt{id}, \texttt{neighID}) in der Tabelle \texttt{distAux} größer ist
+als 2. Wenn ja, wird zum Wert an der Stelle (\texttt{id}, \texttt{neighID}) in der Tabelle \texttt{distAux}2 addiert
+und in \texttt{neighDistances} eingefügt, so lange diese neue Summe nicht größer ist als \texttt{charge}.\\
+Danach erfolgt eine Iteration von \texttt{neighDistances}. Als \texttt{nextCharge} speichere ich den Wert im Array \texttt{status}
+an der Stelle \texttt{neighID}. Ich bilden eine Kopie von \texttt{status} und speichere sie als \texttt{cpstatus} und
+eine Kopie von \texttt{result} und speichere sie als \texttt{cpresult}. An der Stelle \texttt{neighID} im Array \texttt{cpstatus}
+speichere ich die Differenz von \texttt{charge} und der iterierten Entfernung. Am Ende des Arrays \texttt{cpresult} hänge ich
+\texttt{neighID} und die iterierte Entfernung.
+Danach lasse ich die Funktion \texttt{next()} rekursiv mit folgenden Parametern laufen: \texttt{neighID} als Eingabeindex,
+\texttt{nextCharge} ale aktuelle Ladung, \texttt{cpstatus} als eine Kopie von $C$ und \texttt{cpresult} als eine Kopie von $R$.
+Den ausgegebenen Wert speichere ich als \texttt{found}. Wenn \texttt{found} 1 beträgt gebe ich 1 aus.
+Andernfalls wird das letzte Element aus dem Array \texttt{cpresult} entfernt.\\
+
+Bei der Deklarierung dieser Klassen werden, wie beschrieben, die erwähnten Matrizen und Arrays aus der Klasse \texttt{Graph}
+abgerufen. Ein Array \texttt{startStatus} wird gebildet, in dem die Ladungen jeder Batterie gespeichert werden. 
+Als \texttt{startCharge} speichere ich die erste aktuelle Ladung der Batterie \texttt{start}. An der Stelle 0 im Array
+\texttt{startStatus} wird 0 gesetzt. Ich bilde ein Array \texttt{results}, das dem Array $R$ entspricht.
+Ich hänge den Starteingabeindex und den Wert 0 am Ende dieses Arrays an. Dann lasse ich die Funktion \texttt{next} mit
+folgenden Parametern laufen: den Eingabeindex der Startbatterie, \texttt{startCharge} als die aktuelle Ladung, \texttt{startStatus}
+und \texttt{results}. Zwischen dem Start dieser Operation und ihr Ende messe ich die vergangene Zeit mit Hilfe von 
+Namespace \texttt{steady\_clock}. Wenn ein Pfad von der Startbatterie gefunden wird, wird er in Form von den Elementen von
+\texttt{foundPath} ausgegeben. Wenn nicht, erfolgt eine entsprechende Meldung. Anschließend wird das Format der Zeit so angepasst, 
+dass nur die Minuten und Sekunden angezeigt werden.
 
 \subsection{Die Klasse \texttt{Generator}}
+
 
 \newpage
 \section{Beispiele}
@@ -556,7 +686,7 @@ der Batterien in einer Spielsituation. Diese Indizes entsprechen der Reihenfolge
 diese Zahl entspricht der Startbatterie.\\
 Eine Notation $a(d_a) \rightarrow b(d_b)$ bedeutet, dass man von der Batterie mit dem Eingabeindex $a$ zur Betterie $b$ genau $d_b$ Schritten
 gemacht hat. Das heißt, dass man von der Ladung von $a$ $d_b$ abgezogen hat und die übrige Ladung auf das Feld mit $b$ gestellt hat.\\
-Zahl $-1$ steht für ein beliebiges Feld, zu dem man am Ende übergeht, um die restliche Ladung aus der letzten Batterie auszunutzen.
+Die Zahl $-1$ steht für ein beliebiges Feld, zu dem man am Ende übergeht, um die restliche Ladung aus der letzten Batterie auszunutzen.
 
 \subsection{Beispiel 0 (BWINF)}\label{example:0}
 Textdatei: \texttt{stromrallye0.txt}\\
@@ -699,7 +829,7 @@ $0 \rightarrow 1(4) \rightarrow 3(7) \rightarrow 4(2) \rightarrow 3(10) \rightar
 \rightarrow 13(1) \rightarrow 14(1) \rightarrow 15(1) \rightarrow 16(1) \rightarrow 17(1) \rightarrow 18(1) \rightarrow 19(1) \rightarrow 20(3) 
 \rightarrow 21(1) \rightarrow 22(1) \rightarrow 23(1) \rightarrow 24(1) \rightarrow 25(1) \rightarrow 28(1) \rightarrow 27(1) \rightarrow 26(1) 
 \rightarrow 27(1) \rightarrow 30(1) \rightarrow 31(1) \rightarrow 30(1) \rightarrow 33(1) \rightarrow 34(1) \rightarrow 35(1) \rightarrow 32(1) 
-\rightarrow 29(1) \rightarrow -1(1) $
+\rightarrow 29(1) \rightarrow -1(1)$
 
 \subsection{Beispiel 8}\label{example:8}
 Textdatei: \texttt{stromrallye8.txt}\\
@@ -714,6 +844,21 @@ Zeit: 0 min 0 s\\
 \noindent
 $0 \rightarrow3(2) \rightarrow 1(3) \rightarrow 1(2) \rightarrow 2(3) \rightarrow 4(6) \rightarrow 5(4) \rightarrow 5(2) \rightarrow 5(2)
 \rightarrow 5(2) \rightarrow 5(2) \rightarrow 5(2) \rightarrow 5(2) \rightarrow 5(2) \rightarrow 5(2)$
+
+\subsection{Beispiel 9}\label{example:9}
+Textdatei: \texttt{stromrallye9.txt}\\
+Besonderheit: ein anhand des selbst gebauten Generators generiertes Beispiel\\
+
+\noindent
+\fbox{Die Spielsituation ist lösbar.}\\
+
+\noindent
+Zeit: 0 min 0 s\\
+
+\noindent
+$0 \rightarrow 4(5) \rightarrow 3(5) \rightarrow 6(7) \rightarrow 8(6) \rightarrow 9(3) \rightarrow 8(3) \rightarrow 8(2) \rightarrow 9(5) 
+\rightarrow 6(7) \rightarrow 7(5) \rightarrow 2(6) \rightarrow 1(2) \rightarrow 3(4) \rightarrow 5(1) \rightarrow 5(2) \rightarrow 4(4) 
+\rightarrow -1(1)$
 
 
 \newpage
