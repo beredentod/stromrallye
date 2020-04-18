@@ -133,6 +133,52 @@ void Graph::determineConnections()
 				neighbors.pb(mp(neighBoardID, neighCharge));
 			}
 
+			if (slant)
+			{
+				//oben
+				if (i != 1)
+				{
+					//oben links
+					if (j != 1)
+					{
+						int neighBoardID = (i-2) * (boardDimension) + j-2;
+						int neighCharge = board[i-1][j-1];
+
+						neighbors.pb(mp(neighBoardID, neighCharge));
+					}
+
+					//oben rechts	
+					if (j != boardDimension)
+					{
+						int neighBoardID = (i-2) * (boardDimension) + j;
+						int neighCharge = board[i-1][j+1];
+
+						neighbors.pb(mp(neighBoardID, neighCharge));
+					}								
+				}
+				//unten
+				if (i != boardDimension)
+				{
+					//unten links
+					if (j != 1)
+					{
+						int neighBoardID = (i) * (boardDimension) + j-2;
+						int neighCharge = board[i+1][j-1];
+
+						neighbors.pb(mp(neighBoardID, neighCharge));
+					}
+
+					//unten rechts	
+					if (j != boardDimension)
+					{
+						int neighBoardID = (i) * (boardDimension) + j;
+						int neighCharge = board[i+1][j+1];
+
+						neighbors.pb(mp(neighBoardID, neighCharge));
+					}								
+				}
+			}
+
 			nodes.pb(neighbors);
 		}
 	}

@@ -87,8 +87,9 @@
 
 \vspace{0.5cm}
 
+\newpage
 \section{Lösungsidee}
-\subsection{Definitionen}
+\subsection{Definitionen}\label{sec:definitions}
 
 Als eine \textit{Batterie} bezeichne ich ein Objekt mit zwei Koordinaten $x$, $y$ und einer Ladung $c$.
 Unter einer \textit{Ladung} versteht man eine nichtnegative, rationale Zahl.
@@ -226,7 +227,8 @@ Man kann auch aber dieses Feld in 3 Schritten erreichen, wenn man einen Schritt 
 Außerdem kann man laut der Beobachtung \ref{observ:2k-steps} auch dieses Feld in 5 Schritten erreichen.
 \underline{Im zweiten Beispiel} kann man nur das Feld mit 1 in einem Schritt erreichen, weil es keinen andren Weg vom Feld mit 5 
 zum Feld mit 1 gibt, der länger ist als 2.}
-\end{figure}\label{fig:distances-aux}
+\label{fig:distances-aux}
+\end{figure}
 
 \subsubsection{Schleifen in Knoten}
 Wir müssen auch einen Sonderfall berücksichtigen, dass man von einem Knoten zu demselben Knoten zurückkehren kann.
@@ -282,7 +284,8 @@ zwei, eins oder null zusätliche, freie Nachbarfelder hat.\\
 \caption{Dargestellt sind Fragmente einer Matrix. Die Zahlen stellen die Ladungen der Batterien dar, die auf diesen Feldern liegen.
 \underline{Im ersten Beispiel} kann man maximal zwei Schritte von der Batterie mit der Ladung 4 machen, um an dieselbe Stelle zurückzukommen. \underline{Im zweiten Beispiel} kann man schon $2n$ Schitte machen, wobei $n \in \mathbb{N^{+}}$.
 \underline{Im dritten Beispiel} kann man überhaupt keine Schleife durchführen.}
-\end{figure}\label{fig:extra-tiles}
+\label{fig:extra-tiles}
+\end{figure}
 
 Auf diese Weise bekommen wir eine Tabelle $A$ mit allen minimalen Entfernungen zu Batterien, die von jeder Batterie
 ereichbar sind. In der Tabelle $A'$ haben wir die zusätzlichen minimalen Entfernungen,
@@ -391,6 +394,7 @@ level 2/.style={level distance=2cm, sibling distance=9mm}]
 \caption{Ein abgebildeter Baum der 0., 1. und 2. Niveaus des Beispiels \ref{example:0} (das Beispiel aus der Aufgabenstellung).
 Die Nummern in Knoten entsprechen den Eingabeindizes der Batterien. Die Potenzen stellen die Ladung dar, die wir auf einem
 Feld finden, wenn wir eine Batterie erreichen.}
+\label{fig:tree}
 \end{figure}
 
 Diese rekursive Funktion nimmt als Parameter einen Eingabeindex $id$, die aktuelle Ladung, ein kopiertes Array $C$
@@ -436,10 +440,11 @@ das Array $C$ und das Array $R$.
 Wenn der ausgegebene boolsche Wert 1 beträgt, wird die Folge von Schritten im gefundenen Pfad aussgegeben. Andernfalls erfolgt
 eine Meldung, dass kein solcher Pfad gefunden wurde.
 
+\newpage
 \subsection{Laufzeit}\label{sec:time}
 
 $b$ -- Anzahl der Batterien\\
-$l$ -- Länge und Breite der Matrix $M$\\
+$l$ -- Länge oder Breite der Matrix $M$\\
 
 Vorbereitung der Tabellen $A$ und $A'$:
 \begin{itemize}
@@ -457,39 +462,249 @@ Vorbereitung der Tabellen $A$ und $A'$:
 Wir addieren zusammen:\\
 $O(b) + O(l^2) + O(b*l) + O(b) = O(l^2 + b*l + 2b) \in O(l^2 + b*l)$\\
 
-Backtracking:
+Backtracking (worst-case):\\
+Um sie zu bestimmen, bediene ich mich des Faktes, dass ich
+einen Möglichkeitsbaum bilde. (Beispiel, s. Abb. \ref{fig:tree})\\
+Von jeder Batterie kann man zu $n$ Batterien übergehen.
+Dieser Wert kann maximal $n = b$ betragen, wenn man zu allen Batterien übergehen kann.
+Auch kann ich jede von diesen $n$ Batterien in maximal $m = \frac{1}{2}*max(x: x \in C)$
+möglichen Anzahlen von Schritten erreichen.
+Das folgende Prdukt stellt dar, wie viele Verbindungen es von einem Knoten zu seinen Blättern in einem Baum maximal existieren kann: $n * m$.
+Nun müssen wir diesen Wert noch an alle Knoten in diesem Baum übertragen. Das heißt, dieses Produkt wird zur Basis einer Potenz.
+Der Exponent dieser Potenz entspricht maximal $s = \sum_{i=0}^C{C_i}$, wie das in den Beispielen \ref{example:1} und \ref{example:2} gut
+sichtbar ist. In worst-case ist dann die Laufzeit:
+\begin{align*}
+O((n*m)^s), \text{wobei } n = b.
+\end{align*}
+Diese Lauzeit kann horrend scheinen, aber werfen einen Blick wir auf unsere Beispiele.\\
+Im Beispiel \ref{example:1} haben wir $b = 100$ Batterien. Von jeder Batterie kann man maximal $n = 4$ andere Batterien erreichen.
+Zwischen jedem Paar von Batterien kann man maximal einen Schritt machen, also $m = 1$. Die Summe aller Ladungen beträgt $s=100$.
+Wir kommen auf die folgende Laufzeit: $O(4 * 1)^{100}$.\\
+Beim Beispiel \ref{example:2} haben wir eine ähnliche Sitaution: $b = 121$, $n = 4$, $m = 1$, $s = 2* 121 = 242$.\\
+So kommen wir auf die folgende Laufzeit: $O(4 * 1)^{242}$.
+Dazu kommt noch die eingebaute Heuristik, die die erreichbaren Batterien nach ihren Ladung absteigend sortiert.
+Sie bechleunigt sehr deutlich den Lauf des Programms.\\
+In anderen Beispielen (außer dem Beispiel \ref{example:5}/\ref{example:7} ) läuft mein Programm auch sehr schnell, weil $s$ sehr gering bleibt. 
+
+
+\subsection{Erweiterungen}
+\subsubsection{Schräge Übergänge}\label{sec:slant}
+Im Abschnitt \ref{sec:definitions} beschrieb ich die Möglichkeiten, zu welchen Feldern man einen Schritt machen darf.
+Als eine Erweiterung der Aufgabenstellung erlaube ich in meinem Programm auch schräge Übergänge, die ebenfalls
+als ein Schritt gezählt werden. Angenommen, stehen wir auf einem Feld $f$ mit Koordinaten $(x_f, y_f)$, so dürfen wir auch zu folgenden Feldern
+einen Schritt machen:
 \begin{itemize}
-  \item 
+  \item nach oben links zum Feld mit einer $y$--Koordinate um 1 kleiner als $y_f$ und mit einer $x$--Koordinate um 1 kleiner als $x_f$,
+    also zum Feld ($x_{f-1},y_{f-1}$),
+  \item nach oben rechts zum Feld mit einer $y$--Koordinate um 1 kleiner als $y_f$ und mit einer $x$--Koordinate um 1 größer als $x_f$,
+    also zum Feld ($x_{f+1}y_{f-1}$),
+  \item nach unten links zum Feld mit einer $y$--Koordinate um 1 größer als $y_f$ und mit einer $x$--Koordinate um 1 kleiner als $x_f$,
+    also zum Feld ($x_{f-1},y_{f+1}$),
+  \item nach unten rechts zum Feld mit einer $y$--Koordinate um 1 größer als $y_f$ und mit einer $x$--Koordinate um 1 größer als $x_f$,
+    also zum Feld ($x_{f+1},y_{f+1}$).
 \end{itemize}
+
+Diese Methode wurde angewendet, um das Beispiel \ref{example:3} zu lösen, das normalerweise unlösbar bleibt.
+Das Ergebnis dieses Versuchs ist im Beispiel \ref{example:3+} zu finden.
+
+\nocite{*}
+\printbibliography
 
 \newpage
 \subsection{Generierung von Spielsituationen}
 Beim Lösen dieses Problems lesen wir die Koordinaten der Batterien ein, bestimmen die Entfernungen zwischen ihnen,
 lassen den rekursiven Algorihtmus laufen und am Ende bekommen wir einen Pfad aus der Wurzel in $s$ mit einer Folge von
-Schritten zwischen Baterrien. Beim Generieren von solchen Spielsituation gehen genau andersherum vor.
+Schritten zwischen Baterrien. Beim Generieren von solchen Spielsituation gehen wir genau andersherum vor.
 Wir generieren zunächst die Folge von Schritten, die zwischen Batterien zu machen sind, sodass die ganze 
 Spielsituation lösbar ist.\\
 Um das Programm unter vielen Umständen nutzbar zu machen, lasse ich den Benutzer eine Anzahl von Batterien $n$ einzugeben.
 Bei der Generierung einer Folge von Schritten unterscheide ich zwischen zwei Situationen:
 \begin{itemize}
   \item \textit{Hinzufügen} -- in dieser Situation sind Batterien $a$ und $b$ so platziert, 
-    dass wir von $a$ zu $b$ so übergehen, dass die Ladung, die wir bei $a$ finden reicht, um $b$ ohne Verlust an der Ladung
-    zu erreichen. Es ist zu beachten, dass es nicht bedeutet, dass diese Ladung genau der minimalen Entfernung $d_{min}$ von $a$ zu $b$ entspricht.
+    dass wir von $a$ zu $b$ so übergehen, dass die Ladung, die wir bei $a$ finden, reicht, um $b$ ohne Verlust an der Ladung
+    zu erreichen. Es ist zu beachten, dass das nicht bedeutet, dass diese Ladung genau der minimalen Entfernung $d_{min}$ von $a$ zu $b$ entspricht.
     Es kann sich um eine Entfernung $d_{min}+2k$, wobei $k \in \mathbb{N^{+}}$, handeln.
   \item \textit{Einfügen} -- in dieser Situation handelt es sich darum, dass wir von einer Batterie $a$ zu $b$ übergehen und müssen danach
-   zu
+   zurück zu $a$ kommen.
 \end{itemize}
+Die erste Sitaution ist einfach und sehr intuitiv. Die zweite ist deutlich schwieriger, weil man beim per-Hand-Lösen nachdenken muss,
+wie man die restliche Ladung von $a$ behandelt. Eine solche Situation ist kontraintuitiv besonders, wenn mehrere Einfügen-Sitautionen
+nacheinander auftreten.\\
+Ich bilde ein Array $W$, in dem ich die Reihenfolge der Batterien speichere.
+Ich fordere vom Benutzer meines Programms, dass er eine Anzahl der Batterien eingibt, die mindestens 1 ist.
+Aus diesem Grund kann ich sofort am Ende des Arrays $W$ 0 anhängen, also der Eingabeindex der Startbatterie.
+Danach generiere ich $n-1$ booleschen Werte (0 -- Hinzufügen, 1 -- Einfügen), deren Verteilung der stetigen Gleichverteilung entspricht.
+Wenn es sich um eine Einfügen--Situation handelt, darf ich nicht vergessen, dass ich sicherstellen muss, dass
+der Index der Batterie, die es betrifft, auch danach in der Reihenfolge auftritt. Aus diesem Grund bediene ich mich eines Stapelspeichers.
+Ich iteriere danach durch die generierten Werte. Gleichzeitig setzte ich auch einen Iterator $i$,
+der auf den nächsten Index einer Batterie zeigt, also nach 0. 
+Wenn ich auf eine Hinzufügen--Situation komme, hänge ich einfach den Wert $i$ am Ende des Arrays $W$ an
+und überprüfe, ob es Indizes in dem Stapelspeicher gibt. Wenn ja, sehe ich den ersten nach,
+ich füge ihn am Endes des Arrays $W$ und kellere ihn aus.\\
+Wenn ich auf eine Einfügen--Situation komme, hänge ich am Ende des Arrays $i$ an und kellere $i$ in den Stapelspeicher ein.\\
+So komme ich auf eine Reihenfolge von Eingabeindizes, mit Hilfe deren ich sicherstelle, dass eine Spielsituation lösbar ist.
+(s. unten Abb. \ref{fig:ex-order} mit einer Beispielreihenfolge)\\
 
-\TODO{TODO: Einfügen ist schwierig und counterintuitive}
+\begin{figure}[h]
+\centering
+$0 \longrightarrow 1 \longrightarrow 2 \longrightarrow 3 \longrightarrow 2 \longrightarrow 1 \longrightarrow 4 \longrightarrow 5$\\
+$H \rightarrow E \rightarrow E \rightarrow H \rightarrow E' \rightarrow E' \rightarrow H \rightarrow H$
+\caption{Eine Beispielsituation. Die Nummern in der oberen Reihe sind Eingabeindizes in $W$.
+Die Buchstaben unten sind die entsprechenden Situationen. $E'$ weist darauf hin, dass der entsprechende Eingabeindex
+schon früher auftrat und es bei ihm um eine Einfügen--Situation handelte.}
+\label{fig:ex-order}
+\end{figure}
+
+Nun kommen wir zur Generierung der Entfernungen zwischen den jeweiligen Indizes in $W$.
+Ich verbinde diese Operation gleichzeitig mit der Generierung der Koordinaten für jede Batterie.\\
+Ich bilde ein Array $F$, in dem ich diese Entfernungen zwischen Indizes in der Reihenfolge enthalten sind.
+Es ist zu beachten, dass $F$ der Länge $|F| = |W|-1$ ist.
+Ich lege auch ein Array $K$ fest, in dem die Koordinaten jeder Batterie gespeichert werden.
+Ich bilde ein Array $vis$, in dem die Batterien gekennzeichnet werden, für die Koordinaten bereits bestimmt wurden.
+Ich lege auch eine Menge $used$ fest, in der die bestimmten Koordinaten enthalten werden.\\
+Wie beim Generieren der Reihenfolge muss beachtet werden, 
+dass wir bei einer Einfügen--Situation die Entfernungen in $F$ spiegeln. Aus dem Grund bediene ich
+mich auch eines Stapelspeichers, der ein Paar von ganzen Zahlen speichert: einen Index und eine Entfernung.\\
+Wir iterieren durch $W$ vom ersten bis zum vorletzen Element. Den Iterator nenne ich $i$.\\
+Ich generiere eine ganze Zahl aus dem Bereich $[1,5]$, die ich $dist$ nenne.
+Ich kopiere diese Zahl als $currDist$. Ich überprüfe, ob der Index des ersten Elements im Stapelspeicher 
+gleich $v_{i+1}$ ist. Wenn ja, wird $currDist$ als die Entfernung des ersten Elements im Stapelspeicher gespeichert.
+Dann geprüft wird, ob $v_i$ in $vis$ als besucht markiert wurde. Wenn nicht, werden für $v_{i+1}$ Koordinaten 
+bestimmt. $currDist$ ist dann die Entfernung zwischen $v_i$ und $v_{i+1}$.
+Als $prev$ bezeichne ich die Koordinaten in $K$ an der Stelle $v_{i}$.
+Diesen Punkt auf der Ebene nehme ich als Ausgangspunkt bei der Bestimmung der Koordinaten für $v_{i+1}$.
+Nun können wir bemerken, dass es genau $4*currDist$ mögliche Positionen gibt, die sich in der Entfernung, die $currDist$
+beträgt, von $prev$ befinden. Ich nutze diese Information aus und ordne jedem Paar von Koordinaten eine $coorID$ zu.
+\begin{align}
+  coorID(x,y) =
+  \begin{cases}
+      0*currDist + x-1,& \text{wenn } x \geqslant 0 \text{ und } y \geqslant 0\\
+      1*currDist + x-1,& \text{wenn } x \geqslant 0 \text{ und } y < 0\\
+      2*currDist + x-1,& \text{wenn } x < 0 \text{ und } y \geqslant 0\\
+      3*currDist + x-1,& \text{wenn } x < 0 \text{ und } y < 0
+  \end{cases}
+\label{eq:coorID}
+\end{align}
+Nun generiere ich einen ganzzahligen Wert $nextID$ aus dem Bereich $[0, 4*currDist)$.
+Dieser Generator folgt der stetigen Gleichverteilung.
+Anhand dieser generierten Zahl bestimme ich die $x$-- und $y$--Koordinaten.
+Zunächst ohne möglichen Minuszeichen.
+Die $y$--Koordinate lässt sich einfach bestimmen: $y = currDist - |x|$.
+Nach Bedarf ordne ich dann die Minuszeichen nach der Bestimmung von Koordinaten $x$ und $y$ zu.
+Anschließend addiere ich zu $x$ und $y$ entsprechend die $x$-- und $y$--Koordinaten von $prevPoint$.\\
+Nun sollen wir bemerken, dass es zu einer Situation kommen kann, dass ein neu enstandenes Paar von Koordinaten 
+schon benutzt wurde und einer anderen Batterie zugeordnet ist. Das prüfe ich mit Hilfe von $used$.
+Aus diesem Grund müssen wir einfach eine neue $coorID$ generieren.
+In einem Array $free$ kennzeichne ich jedes Mal die gerade generierte $coorID$ als bereits benutzt.
+Wenn es im Array $free$ Stellen gibt, an denen noch 0 steht, also das bedeutet, dass diese Kooridnatenkombination nicht benutzt wurde, haben wir noch ein mögliches Paar, das wir generieren können.
+Der Generator generiert die Zahlen unabhögig davon, ob sie in $free$ markiert wurden.
+Der Generator folgt jedoch der stetigen Gleichverteilung und eine Situation, in der
+wir jedes Mal die gleiche Zahl generieren ist minimal.\\
+Da ich eine ganzzahlige Entfernung aus dem Bereich $[1,5]$ generiere, kann es bei größeren $n$ zu Situationen kommen, 
+dass alle möglichen $coorID$ benutzt werden und man kann einer Batterie ein Paar von Koordinaten zuordnen, die sich
+in der Entfernung $nextDist$ von $prev$ befinden. So muss ich an dieser Stelle $currDist$ um 1 vergrößern und die ganze
+Operation von Bestimmung eines Koordinatenpaars läuft vom Anfang an. Wenn ich ein passendes Paar von Koordinaten finde,
+speichere ich $currDist$ als $dist$, markiere $v_{i+1}$ in $vis$ als besucht, füge speichere die Koordinaten
+an der Stelle $v_{i+1}$ im Array $coor$ und füge dieses Parr in $used$ ein.\\
+Anschließend müssen wir noch die gefundene Entfernung am Ende des Arrays $F$ anhängen.
+Wir erinnern uns auch an die Spiegelung, die ich früher erwähnte. Wir müssen nun prüfen, ob der Index
+des ersten Elements im Stapelspeicher gleich $v_{i+1}$ ist.
+Wenn ja, hängen wir die Entfernung, die beim ersten Element im Stapelspeicher steht, am Ende des Arrays $F$ an.
+Es folgt eine Auskellerung des ersten Elements im Stapelspeicher.\\
+Wenn nicht, hänge ich am Ende des Arrays $F$ $dist$ an. Gleichzeitig kellere ich auch diesen Wert mit dem Index $v_i$
+in den Stapelspeicher ein. (Beispiel, s. Abb \ref{fig:ex-dist})\\
+Nach der Bestimmung des Arrays $F$ suche ich in $coor$ nach der kleinsten Koordinate von allen. 
+Ich speichere sie als $minimal$. Danach multipliziere ich diese Variable mal -1 und addiere 2.
+Ich addiere $minimal$ zu allen Koordinaten in $coor$. Ich muss es tun, weil es Koordinaten geben kann,
+die negativ sind. So verschiebe ich die ganze Matrix um den Wert $minimal$ und ich stelle sicher,
+dass es keine Koordinate gibt, die negativ ist. Ich will auch sicher stellen, dass es bei den Batterien am Rand
+möglich ist eine Schleife durchzuführen. Aus dem Grund addiere ich 2. Mehr dazu im nächsten Abschnitt.
+
+\begin{figure}[h]
+\centering
+$0 \longrightarrow {\color{red}1} \longrightarrow {\color{blue}2} \longrightarrow 3 \longrightarrow {\color{blue}2}
+\longrightarrow {\color{red}1} \longrightarrow 4 \longrightarrow 5$\\
+$2 \longrightarrow {\color{red}3} \longrightarrow {\color{blue}1} \longrightarrow {\color{blue}1} \longrightarrow
+ {\color{red}3} \longrightarrow 4 \longrightarrow 2$
+\caption{Eine Erweiterung der Abb. \ref{fig:ex-order}. Die Zahlen in der unteren Reihenfolge stehen für
+die Entfernungen zwischen jeweiliger über ihnen stehenden Indizes, also die Zahlen in $F$. Die Farbung weist darauf hin, dass
+die zweite Entfernung von der ersten enifach gespiegelt, kopiert wurde, weil es sich an dieser Stelle um
+eine Einfügen--Situation handelte.}
+\label{fig:ex-dist}
+\end{figure}
+
+Danach kommen wir zur Generierung von Ladungen. Dazu lege ich ein Array $H$ und ein Array $P$.
+Es ist zu beachten, dass die Ladung bei einer Batterie $a$ mindestens so groß sein muss wie groß
+die Entfernung zwischen $a$ und $b$ ist, wenn es sich bei $a$ um eine Hinzufügen--Situation handelt.
+Wemn es eine Einfügen--Situation ist, muss die Ladung bei einer Batterie $a$ mindestens so groß sein wie
+die Entfernung von $a$ zu $b$ und die Entfernung zwischen $b$ und $c$ zusammen. Also muss eine
+solche Ladung mindestens die Summe der Entfernungen zwischen $a$, $b$ und $b$, $c$ betragen.\\
+Ich iteriere durch $W$. Jeden interierten Index nenne ich $i$.
+Ich überprüfe, ob der es sich an der Stelle $W_i$ im Array $H$ bereits einen Wert gibt.
+Wenn ja, beduetet es, dass wir mit einer Einfügen--Situation bei $W_i$ zu tun hatten und ich
+addiere an der Stelle $P_{W_i}$ im Array $H$ den Wert $F_i$.\\
+Andernfalls schreibe ich an dieser Stelle den Wert $F_i$. Außerdem speichere ich gleichzeitig 
+an der Stelle $W_i$ im Array $P$ den Wert $W_{i-1}$ (ich überprüfe davor, ob $i$ nicht 0 beträgt).\\
+Danach erfolgt eine Iteration vom Array $H$. Den Iterator nenne ich $i$.
+Ich will sicherstellen, dass jede Batterie mindestens eine Ladung
+besitzt und wenn eine Batterie $H_i$ einen Wert 0 besitzt, als nur die letzte Batterie,
+generiere ich einen ganzzahligen Wert $mult$ aus dem Bereich $[0,2]$.
+Dieser Generator folgt der stetiger Gleichverteilung.
+Zum Wert $H_i$ addiere ich den Wert $2*mult$ und addiere dann 1.\\
+Wenn eine Batterie $i$ schon einen Wert $H_i$ besitzt, der nicht 0 ist, generiere ich ebenfalls
+einen ganzzahligen Wert $mult$ aus dem Bereich $[0,2]$.
+Ich addiere zu $H_i$ $2*mult$.\\
+Ich addiere diese zusätzlichen Vielfachen von 2, um die Spielsituation schwieriger zu machen, weil
+die Person, die die Aufgabe lösen muss, zusätzlich nachdenken muss, was sie mit der gebliebenen
+Ladung machen soll.
+Die zusätzliche Ladung verwirrt auch die Person, weil sie einen Eindruck gibt, dass es vielleicht einen anderen
+Pfad von der Batterie geben kann. Manche Personen können auch gar darauf kommen, dass man eine Schleife
+zu einem Feld machen kann oder dass man einen längeren Weg nehmen kann, wenn die minimale Entfernung mindestens 3 ist.
+
+\begin{figure}[h]
+\centering
+\begin{tabular}{c c}
+  $W$ & $0 \longrightarrow 1 \longrightarrow 2 \longrightarrow 3 \longrightarrow 2 \longrightarrow 1 \longrightarrow 4 \longrightarrow 5$\\
+  $F$ & $2 \longrightarrow 3 \longrightarrow 1 \longrightarrow 1 \longrightarrow 3 \longrightarrow 4 \longrightarrow 2$\\ \hline
+  $H$ & \begin{tabular}{c|c|c|c|c|c|c|}
+   $i$   & 0 & 1 & 2 & 3 & 4 & 5 \\ \hline
+   $H_i$ & 6 & 6{\color{red}+2} & 1 & 1{\color{red}+4} & 5{\color{red}+6} & 0 {\color{red}+4}
+   \end{tabular}
+ \end{tabular}
+\caption{Eine Erweiterung der Abb. \ref{fig:ex-dist}. Die roten Zahlen stellen die addierten, generierten Ladungen dar,
+um die $H_i$ vergrößert wurde.}
+\label{fig:ex-charge}
+\end{figure}
+
+Anschließend durchsuche ich das Array von allen Koordinaten, um die größte Koordinate zu finden.
+Ich speicher sie als $maxCoor$. Ich vergrößere diese Variable um 1. $maxCoor$ wird jetzt zur
+Länge und zur Breite der quadratischen, zu generierenden Matrix $M$.
+Ich tue das, um Schelifen bei den Batterien am Rand zu erlauben.
+Es macht die Aufgabe für eine Person vielleicht nicht schwieriger, aber es macht die Aufgabe schwieriger für den Rechner.\\
+Am Ende wird die Länge/Breite der Matrix, die Koordinaten und die Ladung der Startbatterie, die Anzahl der restlichen Batterien
+und ihre Koordinaten und Ladungen im von BWINF vorgeschlagenen Format als eine Textdatei ausgegeben.
 
 \subsubsection{Laufzeit}
 
+$n$ -- die Anzahl der zu generierenden Batterien
 
-\subsection{Erweiterungen}
+\begin{itemize}
+  \item Generierung der Reihenfolge: $O(n)$\\
+  In worst-case kann das augegebene Array maximal der Länge $2n$ sein, also: $O(2n)$.
+  \item Generierung der Entfernungen und Koordinaten: $O(c*n)$ (worst-case)\\
+  Das Anhängen der Entfernung im Array $F$ erfolgt in $O(2n)$.\\
+  Wir brauchen maximal $O(4*currDist)$, um ein Paar von Koordinaten einer Etnfernung $currDist$
+  zu finden. $currDist$ ist am Anfang maximal 5. In average-case, wenn wir $currDist$ nicht vergrößern,
+  beträgt die Laufzeit dann $O(1)$. In worst-case schätze ich die Anzahl der Vergrößerungen von $currDist$
+  nur als eine Konstante $c$ ab, wobei $c \ll n$. Nach den durchgeführten Experimenten ist es sehr unwahrscheinlich,
+  dass $currDist$ mehr als 1 Mal vergrößert werden muss.
+  \item Generierung der Ladungen: $O(n)$\\
+  Das Array mit der Reihenfolge wird iteriert ($O(2n)$) und das Array mit Ladungen wird iteriert,
+  das maximal $n$ lang sein kann ($O(n)$).
+\end{itemize}
 
-\nocite{*}
-\printbibliography
-
+Nun addieren wir alles zusammen (worst-case):\\
+$O(n) + O(c*n) + O(n) = O(c*n + 2n) \in O(n)$, wobei $c = const.$\\
 
 
 \newpage
@@ -497,12 +712,14 @@ Bei der Generierung einer Folge von Schritten unterscheide ich zwischen zwei Sit
 In meinem Programm wird eine Batterie als eine Klasse \texttt{Battery} dargestellt.
 Jedes Objekt einer solchen Klasse besitzt jeweils eine $x$-- und $y$--Koordinate,
 einen ganzzahligen Wert \texttt{charge}, der der Ladung einer Batterie entspricht;
-einen Brettindex \texttt{boardID} und einen Eingabeindex \texttt{inputID}.\\
+einen Brettindex \texttt{boardID} und einen Eingabeindex \texttt{inputID}.
 
 \subsection{Die Klasse \texttt{Graph}}
 Wir erstellen zwei Matrizen: \texttt{distances} und \texttt{distancesAux}, die den Matrizen 
 $A$ und $A'$ entsprechen. Sie sind jeweils auf folgender Weise erstellt: \texttt{vector< vector<int> >}.
-Außerdem erstellen wir noch ein Array \texttt{extraTiles}, das dem Array $T$ entspricht.\\
+Außerdem erstellen wir noch ein Array \texttt{extraTiles}, das dem Array $T$ entspricht.
+Bei der Erstellung eines Objektes dieser Klasse kann man ein optionalen boolschen Parameter \texttt{slant}
+eingeben, der schräge Übergänge erlaubt. (s. Abschnitt \ref{sec:slant}) \\
 
 In dieser Klasse wird die Textdatei eingelesen. Mit Hilfe der eingelesenen Größe der Matrix $M$\\ \texttt{boardDimension},
 erstelle ich eine Matrix als \texttt{vector< vector<int> >}, die ich \texttt{board} nenne.
@@ -677,7 +894,110 @@ Namespace \texttt{steady\_clock}. Wenn ein Pfad von der Startbatterie gefunden w
 dass nur die Minuten und Sekunden angezeigt werden.
 
 \subsection{Die Klasse \texttt{Generator}}
+Diese Klassen beinhaltet einen Wert \texttt{batNum}, der die Anzahl der zu generierenden Batterien bestimmt.
+Der Wert \texttt{boardDimension} entspricht der Länge einer Seite der zu generierenden quadratischen Matrix.
+Ein Objekt der Klasse \texttt{Battery} namens \texttt{start} entspricht der Startbatterie. Anschließend
+befindet sich in dieser Klasse noch eine Menge von Objekten von \texttt{Battery}, die \texttt{batteries} genannt wird,
+die alle anderen Batterien (also nicht die Startbatterie) speichert. Für den Zufallszahlgenerator bediene ich mich des
+\texttt{std::random\_device}\\
 
+Die Methode \texttt{generateOrder()} generiert die Reihenfolge, in der die Batterien besucht werden. Ich bilde ein Array
+\texttt{num}, ein Array \texttt{generated} und einen Stapelspeicher \texttt{help}. Das erste Array enthälz die generierte Reihenfolge.
+Wir fügen 0 in es ein, weil die Reihenfolge stets mit der Startbatterie beginnt.\\
+Mit Hilfe von \texttt{std::uniform\_real\_distribution} generiere ich \texttt{batNum -1} rationale Zahlen im Bereich $[0, 1)$.
+Ich runde sie dann auf Einer und füge in das Array \texttt{generated} ein. Das sind meine generierten Situationen: 
+0 ist Hinzufügen und 1 ist Einfügen.\\
+Ich iteriere durch die Zahlen vom 1 bis \texttt{batNum} (ausschließlich). Jede iterierte Zahl nenne ich $i$.
+Wenn es sich an der Stelle $i-1$ im Array \texttt{generated} 0 befindet, wird $i$ am Ende des Arrays \texttt{num} angehängt.
+Außerdem wird das erste Element in \texttt{help} auch am Ende des Arrays \texttt{num} angehängt und danach wird dieses Element
+ausgekellert. Diese Operation erfolgt, so lange der Stapelspeicher nicht leer ist.\\
+Wenn 1 an der Stelle $i-1$ im Array \texttt{generated} steht, wird $i$ am Ende von \texttt{num} angehängt. Dazu wird auch $i$
+in den Stapelspeicher eingekellert.\\
+Anschließend erfolgt eine Ausgabe vom Array \texttt{num}.\\
+
+In der Methode \texttt{generateDistances()} werden die minimalen Entfernungen zwischen Batterien und ihre Koordinaten generiert.
+Es wird ein Array \texttt{v} mit der Reihenfolge als Parameter genommen.
+Es werden folgende Arrays gebildet: \texttt{num} fürs Speichern der minimalen Entfernungen, \texttt{vis}, das boolsche Werte
+enthält, fürs Speichern die Batterien, für die koordinaten bestimmt wurden; \texttt{coor}, das Paar von
+ganzzahligen Koordinaten speichert.
+Außerdem bilde ich eine Menge \texttt{used}, die alle bereits benutzten Koordinaten speichert.
+Anschließend bilde ich einen Stapelspeicher \texttt{help}, der Paare von ganzen Zahlen, dem Index und der Entfernung, speichert.\\
+An der Stelle 0 im Array \texttt{coor} speichere ich ein Paar von (0,0). Das sind die Koordinaten der Startbatterie.
+Nun erfolgt eine Iteration vom Array \texttt{v} bis zum vorletzten Element. Den Iterator nenne ich $i$.
+Als \texttt{index} speichere ich den Wert \texttt{v}$_i$ und als \texttt{nextIndex} den Wert \texttt{v}$_{i+1}$.
+Ich generiere eine ganze Zahl \texttt{dist} aus dem Bereich $[1,5]$ anhand \texttt{std::uniform\_int\_distribution}.
+Ich kopiere \texttt{dist} zu \texttt{currDist}. Nun sehe ich das erste Element in \texttt{help} nach und überprüfe
+ob es gleich \texttt{nextIndex} ist. Wenn ja, nimmt \texttt{currDist} den Wert von diesem ersten ersten Element aus \texttt{help}.\\
+Nun erfolgt eine Überprüfung anhand des Arrays \texttt{vis}, ob \texttt{nextIndex} bereits bearbeitet wurde.
+Wenn nicht, generieren wir neue Koordinaten für diese Batterie.
+Ich speichere die Koordinaten des Vorgängers von \texttt{nextIndex}, also \texttt{index}, als \texttt{prevPoint}.
+Gleichzeitig bilde ich zwei neue ganzzahligen Variablen
+\texttt{x}, \texttt{y} und eine boolesche Variable \texttt{all}.\\
+Nun beginnt eine \texttt{do while}--Schleife, die läuft, so lange \texttt{all} \texttt{true} beträgt.
+In dieser Schleife bilde ich ein Array \texttt{free} mit booleschen Werten der Länge 4*\texttt{currDist}.
+Danach beginnt noch eine \texttt{do while}--Schleife. In dieser inneren Schleife wird
+eine ganze Zahl \texttt{coorID} aus dem Bereich $[0, \texttt{4*currDist})$ anhand \texttt{std::uniform\_int\_distribution} generiert.
+Anhand der Gleichung \ref{eq:coorID} werden die Variablen \texttt{x} und \texttt{y} bestimmt.
+Zu den Variablen \texttt{x} und \texttt{y} werden die Koordinaten von \texttt{prevPoint} entsprechend addiert.
+Danach wird \texttt{coorID} im Array \texttt{free} mit \texttt{true} gekennzeichnet. Dann bekommt 
+\texttt{all} den Wert \texttt{true}. Es wird geprüft, ob an allen Stellen des Arrays \texttt{free} 1 steht.
+Wenn nicht, wird \texttt{all} zu \texttt{false}. Die innere \texttt{do while}--Schleife wird
+weiteriteriert, wenn das gefundene Paar von Koordinaten \texttt{x} und \texttt{y} sich bereits
+in der Menge \texttt{used} befindet und ob \texttt{all} gleich 0 ist. Die Suchoperation wird in der Laufzeitbetrachtung vernachlässigt.
+Wenn nicht, bekommt \texttt{dist} den Wert \texttt{currDist}. \texttt{currDist} wird um 1 vergrößert.
+Hier endet die äußere \texttt{do while}--Schleife und wenn \texttt{all} \texttt{false} wird die Schleife abgebrochen.\\
+An der Stelle \texttt{nextIndex} im Array \texttt{coor} wird das Par von neu gefundenen Koordinaten gespeichert.
+Diese Paar wird auch in die Menge \texttt{used} eingefügt. \texttt{nextIndex} wird im Array \texttt{vis} mit 1 gekennzeichnet.\\
+Danach wird geprüft, ob der Index des ersten Elements aus \texttt{help} gleich \texttt{nextIndex} ist.
+Wenn ja, wird am Ende des Arrays \texttt{num} die Entfernung dieses ersten Elements angehängt und aus dem Stapelspeicher ausgekellert.
+Andernfalls, wird am Ende des Arrays \texttt{num} der Wert \texttt{dist} angehängt und ein Paar aus \texttt{index} und
+\texttt{dist} wird in \texttt{help} eingekellert. Hier endet die Iteration von \texttt{v}.\\
+Anschließend wird die kleinste Koordinate von allen gefunden. Sie wird als \texttt{minimal} gespeichert.
+Dieser Wert wird mal -1 multipliziert und 2 wird dazu addiert. 
+Nun vegrößern wir alle Koordinaten im Array \texttt{coor} um den Wert \texttt{minimal}.\\
+Anschließend werden das Array \texttt{num} und das Array \texttt{coor} ausgegeben.\\
+
+Die Methode \texttt{generateCharges()} generiert Ladungen für jede Batterie. Sie nimmt als Parameter ein
+Array \texttt{v} mit der Reihenfolge und ein Array \texttt{dist} mit den minimalen Entfernungen.
+Es werden ein Array \texttt{ch} und ein Array \texttt{prev}, beide der Länge \texttt{batNum}.\\
+Falls das Array \texttt{dist} nicht leer ist, wird das Array \texttt{v} iteriert. Den Iterator nenne ich $i$.
+Als \texttt{currDist} speichere ich den Wert im Array \texttt{dist} an der Stelle $i$.
+Wenn der Wert an der Stelle \texttt{v}$_i$ im Array \texttt{ch} gleich 0 ist, stelle ich an dieser Stelle den Wert \texttt{currDist}
+und wenn der Wert \texttt{v}$_i$ nicht 0 ist, wird der Wert \texttt{v}$_{i-1}$ an der Stelle \texttt{v}$_i$ im Array \texttt{prev}
+gespeichert.
+Anderfalls, wenn der Wert an der Stelle \texttt{v}$_i$ im Array \texttt{ch} nicht gleich 0 ist, addiere ich
+zu dem Wert an der Stelle \texttt{prev}$_{\texttt{v}_i}$ im Array \texttt{ch} den Wert \texttt{currDist}.\\
+Danach wird das Array \texttt{ch} iteriert. Den Iterator nenne ich $i$.\\
+Wen der Wert an der Stelle $i$ im Array \texttt{ch} gleich 0 ist, wird ein ganzzahliger Wert \texttt{multip} im Bereich $[1,3]$ anhand 
+\texttt{std::uniform\_int\_distribution} generiert. Zu dem Wert an der Stelle $i$ im Array \texttt{ch} addiere ich den 2. Vielfachen 
+von \texttt{multip}.
+Andernfalls, der Wert an der Stelle $i$ im Array \texttt{ch} nicht gleich 0 ist, tue ich das Gleiche, aber diesmal generiere
+ich einen Wert \texttt{multip} im Bereich $[0,2]$.\\
+Anschließend wird das Array \texttt{ch} ausgegeben.\\
+
+Die Methode \texttt{prepareOutput()} bereitet die Textdatei auf die Ausgabe vor.
+Hier werden ein Array \texttt{ch} mit Ladungen und ein Array \texttt{coor} mit Koordinaten als Parameter genommen.\\
+Ich iteriere durch die Liste von Koordinaten und suche nach der größten Koordinate von allen. Ich speichere sie als
+\texttt{maximal}. Ich vergrößere \texttt{maximal} um 1. Danach speichere ich diesen Wert als \texttt{boardDimension},
+also die Länge der generierten Matrix.\\
+Danach speichere ich unter \texttt{start} die Koordinaten und die Ladung der Startbatterie.
+Danach forlgt eine Iteration vom Array \texttt{coor} vom Index 1. 
+Bei jedem iterierten Paar von Koordinaten speichere ich auch die dazugehörige Ladung als ein Objekt der Klasse \texttt{Battery}
+und füge es in die Menge \texttt{batteries} ein.\\
+
+In der Methode \texttt{save()} werden die Informationen in \texttt{start}, \texttt{boardDimension} und \texttt{batteries}
+im von BWINF vorgeschlagenen Format gespeichert. Die Textdatei wird normalerweise in dem Order \texttt{../output/}
+unter \texttt{stromrallye\$NUM\$.txt}, wobei \texttt{\$NUM\$} einer eingegeben Nummer entspricht, gespeichert.\\
+
+Bei der Erstellung eines Objektes dieser Klasse muss man einen ganzzahligen Wert \texttt{num} eingeben.
+Dieser Wert muss mindestens 1 betragen. Er wird als \texttt{batNum} gespeichert.
+Es werden folgende Arrays gebildet: \texttt{order}, \texttt{distances}, \texttt{coordinates} und \texttt{charges}.
+Man lässt die Funktion \texttt{generateOrder} laufen und das Ergebnis wird als \texttt{order} gespeichert.
+Danach benutzt man dieses Array als Parameter in der Funktion \texttt{generateDistances}.
+Das erste ausgegebene Ergbenis dieser Funktion wird als \texttt{distances} und das zweite als \texttt{coordinates} gespeichert.
+Danach erfolgt ein Lauf der Funktion \texttt{generateCharges} mit \texttt{order} und \texttt{coordinates} als Parameter.
+Das ausgegebene Ergbenis speichere ich als \texttt{charges}.
+Anschließend lässt man die Funktion \texttt{prepareOutput} mit \texttt{charges} und \texttt{coordinates} laufen.
 
 \newpage
 \section{Beispiele}
@@ -860,6 +1180,18 @@ $0 \rightarrow 4(5) \rightarrow 3(5) \rightarrow 6(7) \rightarrow 8(6) \rightarr
 \rightarrow 6(7) \rightarrow 7(5) \rightarrow 2(6) \rightarrow 1(2) \rightarrow 3(4) \rightarrow 5(1) \rightarrow 5(2) \rightarrow 4(4) 
 \rightarrow -1(1)$
 
+\subsection{Beispiel 3 (erweitert)}\label{example:3+}
+Textdatei: \texttt{stromrallye3.txt}\\
+Besonderheit: schräge Übergänge sind erlaubt\\
+
+\noindent
+\fbox{Die Spielsituation ist lösbar.}\\
+
+\noindent
+Zeit: 0 min 0 s\\
+
+\noindent
+$0 \rightarrow 2(9) \rightarrow 3(10) \rightarrow 1(2) \rightarrow 1(2) \rightarrow 1(2) \rightarrow 1(2) \rightarrow -1(1)$
 
 \newpage
 \section{Quellcode}

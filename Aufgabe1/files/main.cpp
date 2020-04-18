@@ -35,9 +35,28 @@ int main ()
 		cout << "Geben Sie bitte die Nummer des Beispiels ein: ";
 		cin>>nummer;
 
-		string $FILENAME = "../input/stromrallye"+to_string(nummer)+".txt";
-		Graph G($FILENAME);
-		Backtracking back(G);
+		cout << "Schräge Übergänge erlauben? (j/n): ";
+		cin >> rep;
+
+		if (rep == "j" || rep == "J")
+		{
+			string $FILENAME = "../input/stromrallye"+to_string(nummer)+".txt";
+			Graph G($FILENAME, true);
+			Backtracking back(G);
+		}
+		else if (rep == "n" || rep == "N")
+		{
+			string $FILENAME = "../input/stromrallye"+to_string(nummer)+".txt";
+			Graph G($FILENAME);
+			Backtracking back(G);
+		}
+		else
+		{
+			cout << "Eingabe nicht erkannt. Schräge Übergänge ausgeschaltet.\n";
+			string $FILENAME = "../input/stromrallye"+to_string(nummer)+".txt";
+			Graph G($FILENAME);
+			Backtracking back(G);
+		}
 	}
 
 

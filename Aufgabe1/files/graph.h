@@ -23,6 +23,8 @@ private:
 	set<Battery> batteries;
 	Battery start;
 
+	bool slant;
+
 	vector<vector<iPair>> nodes;
 
 	vector<vector<int>> distances;
@@ -60,7 +62,7 @@ private:
 	}
 
 public:
-	Graph(string filename)
+	Graph(string filename, bool s = false): slant(s)
 	{
 		readFile(filename);
 		preprocess();

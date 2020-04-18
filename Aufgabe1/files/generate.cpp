@@ -40,21 +40,19 @@ vector<int> Generator::generateOrder()
 
 pair<vector<int>, vector<iPair>> Generator::generateDistances(vector<int> &v)
 {
-	uniform_real_distribution<double> dis(1,5);
+	uniform_int_distribution<int> dis(1,5);
 
 	vector<int> num;
 	stack<iPair> help;
 
 	vector<bool> vis;
 	vector<iPair> coor;
-	vector<int> prev;
 	set<iPair> used;
 
 	for (int i =0; i < batNum; i++)
 	{
 		vis.pb(0);
 		coor.pb(mp(-1,-1));
-		prev.pb(-1);
 	}
 
 	coor[0] = (mp(0,0));
@@ -65,19 +63,16 @@ pair<vector<int>, vector<iPair>> Generator::generateDistances(vector<int> &v)
 		int index = v[i];
 		int nextIndex = v[i+1];
 
-		int dist = rand()%5 + 1;
+		int dist = dis(rd);
 
-		int nextDist;
+		int currDist = dist;
 
 		if (!help.empty() && help.top().first == nextIndex)
-			nextDist = help.top().second;
-		else
-			nextDist = dist;
+			currDist = help.top().second;
 
 		if (!vis[nextIndex])
 		{
-			iPair prevPoint = coor[v[i]];
-			int currDist = nextDist;
+			iPair prevPoint = coor[index];
 			int x,y;
 			bool all;
 
@@ -87,9 +82,11 @@ pair<vector<int>, vector<iPair>> Generator::generateDistances(vector<int> &v)
 				for (int i=0;i<4*currDist;i++)
 					free.pb(0);
 
+				uniform_int_distribution<int> dis2(0, 4*currDist-1);
+
 				do
 				{
-					int coorID = rand()%(4*currDist);
+					int coorID = dis2(rd);
 
 					int quarter = coorID/currDist;
 					if (quarter == 0)
@@ -182,14 +179,20 @@ pair<vector<int>, vector<iPair>> Generator::generateDistances(vector<int> &v)
 
 vector<int> Generator::generateCharges(vector<int> &v, vector<int> &dist)
 {
-	vector<int> ch(batNum);
-	vector<int> prev(batNum);
+	vector<int> ch;
+	vector<int> prev;
+	for (int i=0;i<batNum;i++)
+	{
+		ch.pb(0);
+		prev.pb(0);
+	}
+
+	uniform_int_distribution<int> dis(0,2);
 
 	if (!dist.empty())
 	{
 		for (int i=0; i < v.size(); i++)
 		{
-			int nextIndex = v[i];
 			int currDist = dist[i];
 
 			if (ch[v[i]] == 0)
@@ -207,12 +210,12 @@ vector<int> Generator::generateCharges(vector<int> &v, vector<int> &dist)
 	{
 		if (ch[i] == 0)
 		{
-			int multip = rand()%3+1; 
+			int multip = dis(rd) + 1; 
 			ch[i] += 2*multip;	
 		}
 		else
 		{
-			int multip = rand()%3; 
+			int multip = dis(rd); 
 			ch[i] += 2*multip;
 		}
 	}
@@ -220,90 +223,32 @@ vector<int> Generator::generateCharges(vector<int> &v, vector<int> &dist)
 	return ch;
 }
 
-/*vector<iPair> Generator::setCoordinates(vector<int> &v, vector<int> &dist)
-{	
-	vector<bool> vis(batNum);
-
-	vector<iPair> coor(batNum);
-	vector<int> prev(batNum);
-
-	set<iPair> used;
-
-	coor[0] = (mp(0,0));
-	prev[0] = -1;
-
-	for (int i=1; i < v.size(); i++)
-	{
-		int nextIndex = v[i];
-
-		if (!vis[nextIndex])
-		{
-			iPair prevPoint = coor[v[i-1]];
-			prev[nextIndex] = v[i-1];
-
-			int currDist = dist[i-1];
-
-			int x,y,neg;
-
-			do
-			{
-				x = rand()%currDist + 1;
-				y = abs(currDist - x);
-				neg = rand()%2;
-
-				if (neg == 1)
-					x = -x;
-
-				neg = rand()%2;
-				if (neg == 1)
-					y = -y;
-
-			} while (used.find(mp(x,y)) != used.end());
-
-			coor[nextIndex] = mp(x,y);
-			used.insert(mp(x,y));
-
-			vis[nextIndex] = 1;
-		} 
-	}
-
-	int minimal = INT_MAX;
-	
-	for (auto x: coor)
-	{
-		minimal = min(minimal, x.first);
-		minimal = min(minimal, x.second);
-	}
-
-	minimal = -minimal;
-	minimal += 2;
-
-	for (int i=0;i<coor.size();i++)
-	{
-		coor[i].first += minimal;
-		coor[i].second += minimal;
-	}
-
-	return coor;
-}*/
-
+//diese Methode speichert die generierten Ladungen und Koordinaten
+//in der Menge batteries
+// ch - das Array mit Ladungen
+// coor - das Array mit Koordinaten
 void Generator::prepareOutput(vector<int> &ch, vector<iPair> &coor)
 {
-	//boardDimension
+	//es wird die maximale Koordinate von allen gesucht
 	int maximal = INT_MIN;
 	for (auto x: coor)
 	{
 		maximal = max(maximal, x.first);
 		maximal = max(maximal, x.second);
 	}
+	//wir vergroessern die maximale Koordinate um 1
 	maximal ++;
 
+	//die maximale Koordinate wird zu der Laenge der Matrix
 	boardDimension = maximal;
 
+	//wir speichern die Koordinaten und die Ladung der Startbatterie
+	//unter start
 	start.setX(coor[0].first);
 	start.setY(coor[0].second);
 	start.setCharge(ch[0]);
 
+	//wir fuegen in das Array batteries alle restlichen Batterien ein
 	for (int i=1; i<coor.size(); i++)
 	{
 		Battery b;

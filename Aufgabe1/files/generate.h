@@ -17,7 +17,7 @@ class Generator
 {
 private:
 	int batNum; //number of batteries
-	string savePath = "stromrallye.txt";
+	string savePath = "stromrallye1000.txt";
 
 	random_device rd;
 
@@ -28,7 +28,6 @@ private:
 	vector<int> generateOrder();
 	pair<vector<int>, vector<iPair>> generateDistances(vector<int> &v);
 	vector<int> generateCharges(vector<int> &v, vector<int> &dist);
-	//vector<iPair> setCoordinates(vector<int> &v, vector<int> &dist);
 
 	void prepareOutput(vector<int> &ch, vector<iPair> &coor);
 

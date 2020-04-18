@@ -1,13 +1,13 @@
 \boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
 \babel@toc {ngerman}{}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {1}L\IeC {\"o}sungsidee}{1}{section.1}
+\contentsline {section}{\numberline {1}L\IeC {\"o}sungsidee}{2}{section.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.1}Definitionen}{1}{subsection.1.1}
+\contentsline {subsection}{\numberline {1.1}Definitionen}{2}{subsection.1.1}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\numberline {1.2}Graph}{2}{subsection.1.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {1.2.1}BFS}{2}{subsubsection.1.2.1}
+\contentsline {subsubsection}{\numberline {1.2.1}BFS}{3}{subsubsection.1.2.1}
 \defcounter {refsection}{0}\relax 
 \contentsline {subsubsection}{\numberline {1.2.2}Schleifen in Knoten}{3}{subsubsection.1.2.2}
 \defcounter {refsection}{0}\relax 
@@ -19,42 +19,46 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsubsection}{\numberline {1.3.3}Rekursion}{5}{subsubsection.1.3.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.4}Laufzeit}{6}{subsection.1.4}
+\contentsline {subsection}{\numberline {1.4}Laufzeit}{7}{subsection.1.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.5}Generierung von Spielsituationen}{8}{subsection.1.5}
+\contentsline {subsection}{\numberline {1.5}Erweiterungen}{7}{subsection.1.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\numberline {1.5.1}Laufzeit}{8}{subsubsection.1.5.1}
+\contentsline {subsubsection}{\numberline {1.5.1}Schr\IeC {\"a}ge \IeC {\"U}berg\IeC {\"a}nge}{7}{subsubsection.1.5.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {1.6}Erweiterungen}{8}{subsection.1.6}
+\contentsline {subsection}{\numberline {1.6}Generierung von Spielsituationen}{9}{subsection.1.6}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {2}Umsetzung}{9}{section.2}
+\contentsline {subsubsection}{\numberline {1.6.1}Laufzeit}{11}{subsubsection.1.6.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {2.1}Die Klasse \texttt {Graph}}{9}{subsection.2.1}
+\contentsline {section}{\numberline {2}Umsetzung}{12}{section.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {2.2}Die Klasse \texttt {Backtracking}}{10}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.1}Die Klasse \texttt {Graph}}{12}{subsection.2.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {2.3}Die Klasse \texttt {Generator}}{12}{subsection.2.3}
+\contentsline {subsection}{\numberline {2.2}Die Klasse \texttt {Backtracking}}{13}{subsection.2.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {3}Beispiele}{13}{section.3}
+\contentsline {subsection}{\numberline {2.3}Die Klasse \texttt {Generator}}{15}{subsection.2.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.1}Beispiel 0 (BWINF)}{13}{subsection.3.1}
+\contentsline {section}{\numberline {3}Beispiele}{17}{section.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.2}Beispiel 1 (BWINF)}{13}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.1}Beispiel 0 (BWINF)}{17}{subsection.3.1}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.3}Beispiel 2 (BWINF)}{13}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.2}Beispiel 1 (BWINF)}{17}{subsection.3.2}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.4}Beispiel 3 (BWINF)}{14}{subsection.3.4}
+\contentsline {subsection}{\numberline {3.3}Beispiel 2 (BWINF)}{17}{subsection.3.3}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.5}Beispiel 4 (BWINF)}{14}{subsection.3.5}
+\contentsline {subsection}{\numberline {3.4}Beispiel 3 (BWINF)}{18}{subsection.3.4}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.6}Beispiel 5 (BWINF)}{14}{subsection.3.6}
+\contentsline {subsection}{\numberline {3.5}Beispiel 4 (BWINF)}{18}{subsection.3.5}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.7}Beispiel 6}{14}{subsection.3.7}
+\contentsline {subsection}{\numberline {3.6}Beispiel 5 (BWINF)}{18}{subsection.3.6}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.8}Beispiel 7}{14}{subsection.3.8}
+\contentsline {subsection}{\numberline {3.7}Beispiel 6}{18}{subsection.3.7}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.9}Beispiel 8}{15}{subsection.3.9}
+\contentsline {subsection}{\numberline {3.8}Beispiel 7}{18}{subsection.3.8}
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\numberline {3.10}Beispiel 9}{15}{subsection.3.10}
+\contentsline {subsection}{\numberline {3.9}Beispiel 8}{19}{subsection.3.9}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {4}Quellcode}{16}{section.4}
+\contentsline {subsection}{\numberline {3.10}Beispiel 9}{19}{subsection.3.10}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.11}Beispiel 3 (erweitert)}{19}{subsection.3.11}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4}Quellcode}{20}{section.4}
