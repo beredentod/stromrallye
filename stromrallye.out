@@ -1,7 +1,7 @@
 \BOOKMARK [1][-]{section.1}{L\366sungsidee}{}% 1
 \BOOKMARK [2][-]{subsection.1.1}{Definitionen}{section.1}% 2
 \BOOKMARK [2][-]{subsection.1.2}{Graph}{section.1}% 3
-\BOOKMARK [3][-]{subsubsection.1.2.1}{BFS}{subsection.1.2}% 4
+\BOOKMARK [3][-]{subsubsection.1.2.1}{Breitensuche}{subsection.1.2}% 4
 \BOOKMARK [3][-]{subsubsection.1.2.2}{Schleifen in Knoten}{subsection.1.2}% 5
 \BOOKMARK [2][-]{subsection.1.3}{Backtracking}{section.1}% 6
 \BOOKMARK [3][-]{subsubsection.1.3.1}{Klassifizierung des Problems}{subsection.1.3}% 7

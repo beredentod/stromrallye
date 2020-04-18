@@ -24,53 +24,93 @@ bool Backtracking::next (int id, int charge, vector<int>& status, vector<iPair> 
 	//wenn die Liste von erreichbaren Batterien leer ist
 	if (neighbors.empty())
 	{
+		//wenn die aktuelle Ladung 0 ist
 		if (charge == 0)
 		{
+			//es word geprueft, ob alle Batterien entladen sind
 			bool all = 1;
 			for (auto batt: status)
 				if (batt > 0) all = 0;
 
+			//wenn ja, wird das Ergebnis gefunden
 			if (all) 
 			{
+				//der Pfad mit Ergbenissen wird als foundPath
+				//gespeichert
 				foundPath = result;
 				return 1;
 			}
 
+			//wenn nicht, wird 0 ausgegeben
 			return 0;
 		}
+
+		//wenn es mindestens 2 batteriefreie Felder neben
+		//der Batterie id gibt
 		if (extraTiles[id] > 1)
 		{
+			//die restliche aktuelle Ladung wird an
+			//den 2 batteriefreien Feldern verbraucht
+
+			//-1 steht fuer ein beliebiges Feld
+			//ein letzter Uebergang wird am ende des Arrays
+			//result angehaengt
 			result.pb(mp(-1, charge));
+
+			//es wird geprueft, ob alle Batterien Entladen sind
 			bool all = 1;
 			for (auto batt: status)
 				if (batt > 0) all = 0;
 
+			//wenn ja, wird das Ergebnis gefunden
 			if (all) 
 			{
+				//der Pfad mit Ergbenissen wird als foundPath
+				//gespeichert
 				foundPath = result;
 				return 1;
 			}
 
+			//wenn nicht, wird 0 ausgegeben
 			return 0;
 		}
+
+		//wenn es nur 1 batteriefreies Feld neben
+		//der Batterie id gibt
 		else if (extraTiles[id] == 1)
 		{
+			//die restliche aktuelle Ladung wird nur um 1 verkleinert
+			//wenn nicht, wird 0 ausgegeben
+
+			//-1 steht fuer ein beliebiges Feld
+			//ein letzter Uebergang wird am ende des Arrays
+			//result angehaengt
 			result.pb(mp(-1, 1));
-			charge --;
+
+			//es wird geprueft, ob alle Batterien Entladen sind
 			bool all = 1;
 			for (auto batt: status)
 				if (batt > 0) all = 0;
 
+			//wenn ja und wenn die aktuelle Ladung entladen ist,
+			//wird das Ergebnis gefunden
 			if (all && charge == 0) 
 			{
+				//der Pfad mit Ergbenissen wird als foundPath
+				//gespeichert
 				foundPath = result;
 				return 1;
 			}
 
+			//wenn nicht, wird 0 ausgegeben
 			return 0;
 		}
+
+		//in allen anderen Faellen
 		else
 		{
+			//ein Array mit allen minimalen Entfernungen der Batterien,
+			//die erreicht werden koennen
 			vector<iPair> allNeighbors;
 			for (int i=1;i<dist[id].size();i++)
 			{
@@ -78,33 +118,55 @@ bool Backtracking::next (int id, int charge, vector<int>& status, vector<iPair> 
 					allNeighbors.pb(mp(dist[id][i], i));
 			}
 
+			//alle gefundenen minimalen Entfernungen werden absteigend sortiert
 			sort(allNeighbors.rbegin(), allNeighbors.rend());
 
+			//es wir durch das array mit allen gefunden Entfernungen iteriert
 			for (auto x: allNeighbors)
 			{
+				//wenn eine gefundene Entfernung groesser ist als 2,
+				//koennen wir die ganze restliche aktuelle Ladung verbrauchen
 				if (x.first > 2)
 				{
+					//ein letzter Uebergang wird am ende des Arrays
+					//result angehaengt
 					result.pb(mp(x.second, charge));
 					charge = 0;
+
+					//so koennen wir die Iteration abbrechen
 					break;
 				}
 				else
 				{
+					//ein letzter Uebergang wird am ende des Arrays
+					//result angehaengt
 					result.pb(mp(x.second, x.first));
+
+					//die restliche aktuelle Ladung wird verbraucht
 					charge -= x.first;
+
+					//die folgenden Entfernungen werden nicht groesser,
+					//so koennen wir die Iteration abbrechen
 					break;
 				}		
 			}
 
+			//es wird geprueft, ob alle Batterien Entladen sind
 			bool all = 1;
 			for (auto batt: status)
 				if (batt > 0) all = 0;
 
+			//wenn ja und wenn die aktuelle Ladung entladen ist,
+			//wird das Ergebnis gefunden
 			if (all && charge == 0) 
 			{
+				//der Pfad mit Ergbenissen wird als foundPath
+				//gespeichert
 				foundPath = result;
 				return 1;
 			}
+
+			//wenn nicht, wird 0 ausgegeben
 			return 0;
 		}
 	}
@@ -112,50 +174,86 @@ bool Backtracking::next (int id, int charge, vector<int>& status, vector<iPair> 
 	//der Fall, wenn die Liste nicht leer ist
 	for (auto x: neighbors)
 	{
+		//der Eingabeindex einer erreichbaren Batterie;
+		//die erreichbare Batterie
 		int neighID = x.first;
+		//die minimale Entfernung von der Batterie id zur
+		//erreichbaren Batterie
 		int minDist = x.second;
 
+		//das Array mit allen moeglichen Entfernungen zur erreichbaren
+		//Batterie
 		vector<int> neighDistances;
+		//die minimale Entfernung wird als eine moegliche Entfernung
+		//in das Array eingefuegt
 		neighDistances.pb(minDist);
 
+		//wenn die minimale Entfernung mindestens 3 betraegt
 		if (minDist > 2)
 		{
+			//die naechste moegliche Entfernung
 			int nextDist = minDist + 2;
+			//wir pruefen, ob die Ladung reicht,
+			//um die erreichbare Batterie in dieser Entfernung
+			//zu erreichen
 			while (charge >= nextDist)
 			{
+				//die neue Entfernung wird in das Array eingefuegt
 				neighDistances.pb(nextDist);
+				//eine neue Entfernung wird gebildet
 				nextDist += 2;
 			}
 		}
 		else
-		{
+		{	
+			//es wird geprueft, ob es eine andere Entfernung
+			//von der Batterie id zur erreichbaren Batterie gibt,
+			//die groesser ist als 2
 			if (distAux[id][neighID] > 2)
 			{
+				//die naechste moegliche Entfernung
 				int nextDist = distAux[id][neighID] + 2;
+				//wir pruefen, ob die Ladung reicht,
+				//um die erreichbare Batterie in dieser Entfernung
+				//zu erreichen
 				while (charge >= nextDist)
 				{
+					//die neue Entfernung wird in das Array eingefuegt
 					neighDistances.pb(nextDist);
+					//eine neue Entfernung wird gebildet
 					nextDist += 2;
 				}			
 			}
 		}
 		
+		//es wird durch das Array von moeglichen Entfernungen iteriert
 		for (auto y: neighDistances)
 		{
+			//die naechste aktuelle Ladung
 			int nextCharge = status[neighID];
 			
+			//eine Kopie des Arrays status
 			vector<int> cpstatus = status;
+			//eine Kopie des Arrays result
 			vector<iPair> cpresult = result;
 
+			//die aktuelle Ladung wird verbraucht
 			cpstatus[neighID] = charge - y;
+
+			//die erreichbare Batterie mit deraktuellen Entfernung
+			//wird am Ende des Arrays mit Ergbenissen angehaengt
 			cpresult.pb(mp(neighID, y));	
 
+			//ein rekursiver Aufruf mit neighID als naechste Batterie,
+			//nextCharge als die naechste aktuelle Ladung,
+			//cpstatus als das Array mit allen Ladungen und
+			//cpresult als das Array mit den Ergebnissen
 			bool found = next(neighID, nextCharge, cpstatus, cpresult);
 
 			if (found)
-				return 1;
+				return 1; //wenn alle Batterien entladen sind
 			else
-				cpresult.pop_back();
+				cpresult.pop_back(); //das letzte Element aus 
 		}
 	}
 

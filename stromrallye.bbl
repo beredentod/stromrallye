@@ -59,5 +59,37 @@
     \field{title}{Introduction To Algorithms. Third edtition.}
     \field{year}{2009}
   \endentry
+
+  \entry{garey_johnson_1979}{book}{}
+    \name{author}{2}{}{%
+      {{hash=GMR}{%
+         family={Garey},
+         familyi={G\bibinitperiod},
+         given={Michael\bibnamedelima R.},
+         giveni={M\bibinitperiod\bibinitdelim R\bibinitperiod},
+      }}%
+      {{hash=JDS}{%
+         family={Johnson},
+         familyi={J\bibinitperiod},
+         given={David\bibnamedelima S.},
+         giveni={D\bibinitperiod\bibinitdelim S\bibinitperiod},
+      }}%
+    }
+    \list{publisher}{1}{%
+      {W.H. Freeman}%
+    }
+    \strng{namehash}{GMRJDS1}
+    \strng{fullhash}{GMRJDS1}
+    \field{labelnamesource}{author}
+    \field{labeltitlesource}{title}
+    \field{sortinit}{G}
+    \field{sortinithash}{G}
+    \field{isbn}{9780716710455}
+    \field{pages}{199\bibrangedash 200}
+    \field{title}{Computers and intractability: a guide to the Theory of
+  NP-Completeness}
+    \field{volume}{A1.3}
+    \field{year}{1979}
+  \endentry
 \enddatalist
 \endinput

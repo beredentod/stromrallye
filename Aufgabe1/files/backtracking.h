@@ -100,15 +100,6 @@ public:
 				if (x.first != 0)
 					printf("→  %d(%d) ", x.first, x.second);
 			}
-
-			cout<<"\nTeX Ausgabe:\n0 ";
-
-			for (auto x: foundPath)
-			{
-				if (x.first != 0)
-					printf("\\rightarrow %d(%d) ", x.first, x.second);
-			}
-			cout<<"\n";
 		}
 		else
 			cout<<"\nxxxxxxxxxxxxxxxxxxxx\nKein Pfad wurde gefunden.";

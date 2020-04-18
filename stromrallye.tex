@@ -92,12 +92,12 @@
 \subsection{Definitionen}\label{sec:definitions}
 
 Als eine \textit{Batterie} bezeichne ich ein Objekt mit zwei Koordinaten $x$, $y$ und einer Ladung $c$.
-Unter einer \textit{Ladung} versteht man eine nichtnegative, rationale Zahl.
-Bei Koordinaten sowie bei einer Ladung konzentrieren wir uns auf nichtnegative, ganze Zahlen.\\
+Unter einer \textit{Ladung} verstehe ich eine nicht negative, rationale Zahl.
+Bei Koordinaten sowie bei einer Ladung konzentrieren wir uns auf nicht negative, ganze Zahlen.\\
 
-Gegeben seien eine zweidimensionale, quadratische Matrix $M$ mit der Seitenlänge $l$, eine Menge von Batterien $B$
+Gegeben seien eine zweidimensionale, quadratische Matrix $M$ mit der Seitenlänge $l$, eine Menge $B$ von Batteriend
 und eine Startbatterie $s$.\\
-Jeweilige Batterie $b_i$ aus der Menge $B$ besitzt zwei Koordinaten $x_i \leqslant l$ und $y_i \leqslant l$ und eine Ladung $c_i$.\\
+Jede Batterie $b_i$ aus der Menge $B$ besitzt zwei Koordinaten $x_i \leqslant l$ und $y_i \leqslant l$ und eine Ladung $c_i$.\\
 In der Matrix gibt es \textit{Felder}. Jedes Feld ist eine Kombination aus einer $x$-- und einer $y$--Koordinate.
 Das bedeutet, dass jede Batterie auch auf einem Feld liegt.\\
 
@@ -114,48 +114,49 @@ machen.
 
 Wir können nun feststellen, dass
 \begin{lemma}\label{observ:distances}
-die minimale Anzahl der Schritte von einem Feld, auf dem eine Batterie $i$ liegt, zu einem Feld, 
-auf dem eine Batterie $j$ liegt, konstant ist.
+die minimale Anzahl der Schritte von einem Feld, auf dem eine Batterie $i$ liegt, zu einem Feld, auf dem eine Batterie $j$ liegt,
+durch die Felder $i$ und $j$ eindeutig bestimmt ist.
 \end{lemma}
 
-Die minimale Anzahl der Schritte, die man von einem Feld $p$ zu einem Feld $q$ machen muss, nenne
+Die Anzahl der Schritte, die man von einem Feld $p$ zu einem Feld $q$ machen muss, nenne
 ich die \textit{Entfernung zwischen $p$ und $q$} oder \textit{Entfernung von $p$ zu $q$}.\\
 
 Die Anzahl der Schritte, die wir machen dürfen, ist durch die Größe der Ladung determiniert.
 Wir starten auf dem Feld der Startbatterie, auch \textit{Startfeld} genannt.
-Laut der Aufgabenstellung nehmen wir die Ladung der Batterie, auf Feld deren, wir momentan stehen und 
-die Größe dieser Ladung der Anzahl der Schitte entpricht, die wir momentan machen dürfen. 
+Laut der Aufgabenstellung nehmen wir die Ladung der Batterie, auf deren Feld wir momentan stehen und 
+deren Ladung der Anzahl der Schritte entspricht, die wir momentan machen dürfen. 
 Eine solche Ladung bezeichne ich als die \textit{aktuelle Ladung}. Diese Ladung verkleinert sich um 1
 mit jedem gemachten Schritt.\\
 Wenn die Anzahl der Schritte reicht, um ein anderes Feld mit einer Batterie zu erreichen, müssen wir
 unsere aktuelle Ladung $a$ sofort gegen die auf dem Feld liegenden Ladung $b$ austauschen. Dann lassen
 wir die Ladung $a$ auf dem Feld der Ladung $b$ liegen. $b$ wird zu unserer nächsten aktuellen Ladung.\\
 
+\noindent
 Jede Batterie besitzt auch einen \textit{Eingabeindex}, der beim Einlesen zugeordnet ist.
-Diese Indizes entsprechen der Reihenfolge der Batterien in der Eingabe. Die Startbatterie besitzt stets den Eingabeindex 0.\\
+Diese Indizes entsprechen der Reihenfolge der Batterien in der Eingabe. Die Startbatterie besitzt stets den Eingabeindex 0.
 
 \subsection{Graph}
 Wir ordnen jedem Feld in der Matrix einen \textit{Brettindex} zu.
-Wir legen eine neue Menge fest: $V$. In dieser Menge befinden sich alle Brettindizes der Felder in $M$.
+Wir legen eine neue Menge $V$ fest. In dieser Menge befinden sich alle Brettindizes der Felder in $M$.
 Außerdem legen wir eine andere Menge fest: $E$.
 Wir iterieren durch alle Felder in $M$. Für jedes Feld $i$ werden die Brettindizes seiner benachbarten Felder bestimmt,
 also derjenigen, zu denen man von $i$ einen Schritt machen kann.
 In der Menge $E$ wird jeweils die Verbindung zwischen $i$ und einem Nachbarfeld mit Hilfe der Indizes von $i$ 
 und dem Nachbarn gespeichert. Jedes Feld kann dementsprechend maximal 4 Nachbarfelder besitzen.\\
 
-Anhand der festgelegten Mengen lässt sich ein ungerichteter, ungewichteter Graph $G(V, E)$ bilden.
+Anhand der festgelegten Mengen lässt sich ein ungerichteter Graph $G(V, E)$ bilden.
 In diesem Graphen ist jeder Knoten ein Feld aus der Matrix $M$. Jede Kante ist demzufolge ein
 Schritt zwischen zwei Feldern in $M$. Sie hat stets das Gewicht 1.
 
-\subsubsection{BFS}
-Anhand der Beobachtung \ref{observ:distances} lässt sich feststellen, dass diese Entfernungen zwischen Feldern,
+\subsubsection{Breitensuche}
+Anhand der Beobachtung \ref{observ:distances} lässt sich feststellen, dass die minimalen Entfernungen zwischen Feldern,
 auf denen Batterien liegen, sich durch einen Lauf vom Breitensuche-Algorithmus 
-(engl. \textit{breadth--first serach, BFS}) einfach bestimmen lassen.\\
+(engl. \textit{breadth--first search, BFS}) einfach bestimmen lassen.\\
 
-Für eine Batterie $b$ können wir auf folgender Weise die Entfernungen zu allen anderen Batterien bestimmen.
-Sie werden in einer zweidimensionaller Tabelle $A$ gespeichert.
-Bei jeder iterierten Stelle $A_{i,j}$ in der Tabelle $A$ entsprechen $i$ der Index der Batterie,
-von der die Entfernung gemessen wird, und $j$ der Index der anderen Batterie, deren Entfernung von $i$ bestimmt wird.
+Für eine Batterie $b$ können wir auf folgende Weise die minimalen Entfernungen zu allen anderen Batterien bestimmen.
+Sie werden in einer zweidimensionalen Tabelle $A$ gespeichert.
+Bei jeder iterierten Stelle $A_{i,j}$ in der Tabelle $A$ entsprechen $i$ dem Index der Batterie,
+von der die Entfernung gemessen wird, und $j$ dem Index der anderen Batterie, deren Entfernung von $i$ bestimmt wird.
 Dementsprechend ist $A_{i,j}$ dann die minimale Entfernung von $i$ zu $j$.\\
 Es gibt auch eine parallele, zweidimensionale Tabelle $A'$, deren Funktion ich im nächsten Abschnitt erläutere.\\
 Wir finden im Graphen $G$ den Knoten, der dem Feld, auf dem $b$ liegt, entspricht.
@@ -163,7 +164,7 @@ Wir fügen diesen Knoten mit einer Entfernung 0 in eine Warteschlange ein.
 Diese Warteschlange wird iteriert, so lange es noch Knoten gibt.
 Jeden iterierten Knoten nennen wir $i$ und seine entsprechende Entfernung von $b$: $d_i$.\\
 Wie nehmen $i$ aus der Warteschlange heraus. 
-Danach wird durch die Nachbarknoten von $i$ iteriert, dass heißt, durch diejenigen, die eine Kante mit $i$ besitzen.
+Danach wird durch die Nachbarknoten von $i$ iteriert, das heißt, durch diejenigen, die eine Kante mit $i$ besitzen.
 Jeden iterierten, benachbarten Knoten nenne ich an dieser Stelle $j$.
 Es wird überprüft, ob $j$ bereits besucht wurde. Wenn ja, wird der Knoten $j+1$ genommen.
 Wenn nicht, dann wird überprüft, ob der Knoten $j$ einem Feld entspricht, auf dem eine Batterie liegt.
@@ -171,31 +172,30 @@ Wenn nicht, wird $j$ ganz normal in die Warteschlange mit der Entfernung $d_i + 
 $j$ wird auch danach als besucht markiert.\\
 Wenn aber der Knoten $j$ einem Feld entspricht, auf dem eine Batterie liegt, wird zuerst geprüft,
 ob $A_{i,j}$ bereits gleich 1 oder 2 ist (mehr dazu im nächsten Abschnitt).
-Wenn nicht, wird $A_{i,j}$ der Wert $d_i + 1$ zugewiesen. Nun, nur wenn $d_i + 1 > 2$ wird der Knoten $j$ als
+Wenn nicht, wird $A_{i,j}$ der Wert $d_i + 1$ zugewiesen. Nun, nur wenn $d_i + 1 > 2$, wird der Knoten $j$ als
 besucht gekennzeichnet.\\
 Wenn aber $A_{i,j}$ bereits gleich 1 oder 2 ist, wird geprüft, ob $A'_{i,j}$ bereits einen Wert besitzt.
 Wenn ja und wenn $d_i + 1 < A'_{i,j}$, wird der Wert $A'_{i,j}$ als $d_i + 1$ aktualisiert. 
-Wenn es früher keinen Wert $A'_{i,j}$ nicht gab, wird er als $d_i + 1$ gespeichert.\\
+Wenn es früher keinen Wert $A'_{i,j}$ gab, wird er als $d_i + 1$ gespeichert.\\
 
-Wir sollen bemerken, dass wir 
+Wir bemerken, dass wir 
 \begin{lemma}\label{observ:not-minimal-steps}
-auf dem Weg von einer Batterie $p$ zur Batterie $q$ nich immer die minimale Anzahl an Schritten $A_{p,q}$
-machen können, wenn die Größe der Ladung genügend ist, um das zu tun.
+auf dem Weg von einer Batterie $p$ zur Batterie $q$ nicht immer die minimale Anzahl an Schritten $A_{p,q}$
+machen müssen, wenn die Größe der Ladung genügend ist, um das zu tun.
 \end{lemma}
-Es ist auch zu bemerken, dass
+Es ist auch zu bemerken, dass,
 \begin{lemma}\label{observ:2k-steps}
-wenn die minimale Anzahl der Schritte $A_{p,q} > 2$ oder $A'_{p,q} > 2$ ist, kann man stets die Batterie $q$ auch in $A_{p,q}+2k$,
-bzw. in $A'_{p,q}+2k$,
-wobei $k \in \mathbb{N^{+}}$, Schritten erreichen, so lange die Größe der aktuellen Ladung das erlaubt.
+wenn die minimale Anzahl der Schritte $A_{p,q} > 2$ oder $A'_{p,q} > 2$ ist, man stets die Batterie $q$ auch in $A_{p,q}+2k$,
+bzw. in $A'_{p,q}+2k$ ($k \in \mathbb{N^{+}}$) Schritten erreichen kann, solange die Größe der aktuellen Ladung das erlaubt.
 \end{lemma}
-Der Beweis der Beobachtung \ref{observ:2k-steps} ist trivial: wenn wir auf einem Feld $f$ stehen, können nach demselben
-Feld $f$ mit genau 2 Schritten zurückehren, wenn wir zu einem benahcbarten Feld $h$ einen Schritt machen 
-und dann von $h$ zu $f$ zurück.\\
+Der Beweis der Beobachtung \ref{observ:2k-steps} ist trivial: wenn wir auf einem Feld $f$ stehen, können wir zu demselben
+Feld $f$ mit genau 2 Schritten zurückkehren, wenn wir zu einem leeren benachbarten Feld $h$ einen Schritt machen 
+und dann von $h$ zu $f$ zurückkommen.\\
 So kann man auch die Beobachtung \ref{observ:not-minimal-steps} beweisen, indem man bemerkt, dass wir
-auf dem Weg von $p$ zu $q$ einfach einen Schritt zurück und nach vorne machen.\\
+auf dem Weg von $p$ zu $q$ einfach Schritte zurück und nach vorne machen.\\
 
 Genau aus dem Grund musste ich auch zusätzlich mit Hilfe der Tabelle $A'$ prüfen, ob es auch
-bei den Entfernungen nicht größer als 2 einen anderen Weg gibt, der mindestens der Länge 3 ist.
+bei den minimalen Entfernungen nicht größer als 2 einen anderen Weg gibt, der mindestens der Länge 3 ist.
 Tabelle $A'$ speichert die Länge der minimalen Entfernung von einer Batterie zu einer anderen,
 die auch länger ist als 2. Abbildung \ref{fig:distances-aux} präsentiert ein Beispiel,
 in dem diese besondere Unterscheidung wichtig ist.
@@ -222,15 +222,16 @@ in dem diese besondere Unterscheidung wichtig ist.
 \end{tabular}}
 \end{tabular}
 \caption{Dargestellt sind Fragmente einer Matrix. Die Zahlen stellen die Ladungen der Batterien dar, die auf diesen Feldern liegen.
-\underline{Im ersten Beispiel} kann man vom Feld mit 5 das Feld mit 1 in minimaler Anzahl von einem Schritt erreichen.
-Man kann auch aber dieses Feld in 3 Schritten erreichen, wenn man einen Schritt nach rechts, dann nach unten und nach links macht.
+\underline{Im linken Beispiel} kann man vom Feld mit 5 das Feld mit 1 in minimaler Anzahl von einem Schritt erreichen.
+Man kann aber dieses Feld auch in 3 Schritten erreichen, wenn man einen Schritt nach rechts, dann nach unten und nach links macht.
 Außerdem kann man laut der Beobachtung \ref{observ:2k-steps} auch dieses Feld in 5 Schritten erreichen.
-\underline{Im zweiten Beispiel} kann man nur das Feld mit 1 in einem Schritt erreichen, weil es keinen andren Weg vom Feld mit 5 
+\underline{Im rechten Beispiel} kann man nur das Feld mit 1 in einem Schritt erreichen, weil es keinen anderen Weg 
+über leere Felder vom Feld mit 5 
 zum Feld mit 1 gibt, der länger ist als 2.}
 \label{fig:distances-aux}
 \end{figure}
 
-\subsubsection{Schleifen in Knoten}
+\subsubsection{Schleifen in Knoten}\label{sec:self-loops}
 Wir müssen auch einen Sonderfall berücksichtigen, dass man von einem Knoten zu demselben Knoten zurückkehren kann.
 Mit Hilfe der Tabellen $A$ und $A'$ können wir es nicht überprüfen, ob es überhaupt möglich ist.\\
 Um eine Schleife in Knoten $b$ durchzuführen, brauchen wir mindestens ein benachbartes Feld $i$, auf dem keine Batterie liegt.
@@ -238,10 +239,10 @@ Mit Hilfe dieses Feldes können wir einen Schritt von $b$ zu $i$ machen und von 
 Die Anzahl der Schritte ist $l = 2$.\\
 Wenn wir aber sicherstellen, dass es neben einem batteriefreien Feld $i$ ein anderes batteriefreies Feld $j$ gibt ($i \neq j$),
 können wir eine Schleife in $b$ erstellen, deren Länge $l=4$ ist. Auf folgender Weise machen wir die Schritte:
-$b \rightarrow i \rightarrow j \rightarrow i \rightarrow b$. Auch hier können wir die in der Beobachtung \ref{observ:2k-steps}
-bemerkte Ordnungsgemäßheit anwenden, wenn wir $l$ statt $A_{i,j}$ nehmen. (s. Abb. \ref{fig:extra-tiles}).
+$b \rightarrow i \rightarrow j \rightarrow i \rightarrow b$. Auch hier können wir die Beobachtung \ref{observ:2k-steps}
+anwenden, wenn wir $l$ statt $A_{i,j}$ nehmen. (s. Abb. \ref{fig:extra-tiles}).
 Wir legen noch ein Array $T$ fest, in dem wir die Information an der Stelle $T_i$ speichern, ob die Batterie $i$
-zwei, eins oder null zusätliche, freie Nachbarfelder hat.\\
+zwei, ein oder null zusätzliche freie Nachbarfelder hat.\\
 
 \begin{figure}[h]
 \centering
@@ -282,74 +283,81 @@ zwei, eins oder null zusätliche, freie Nachbarfelder hat.\\
 \end{tabular}}
 \end{tabular}
 \caption{Dargestellt sind Fragmente einer Matrix. Die Zahlen stellen die Ladungen der Batterien dar, die auf diesen Feldern liegen.
-\underline{Im ersten Beispiel} kann man maximal zwei Schritte von der Batterie mit der Ladung 4 machen, um an dieselbe Stelle zurückzukommen. \underline{Im zweiten Beispiel} kann man schon $2n$ Schitte machen, wobei $n \in \mathbb{N^{+}}$.
+\underline{Im ersten Beispiel} kann man maximal zwei Schritte von der Batterie mit der Ladung 4 machen, um an dieselbe Stelle zurückzukommen. \underline{Im zweiten Beispiel} kann man schon $2n$ Schritte machen, wobei $n \in \mathbb{N^{+}}$.
 \underline{Im dritten Beispiel} kann man überhaupt keine Schleife durchführen.}
 \label{fig:extra-tiles}
 \end{figure}
 
 Auf diese Weise bekommen wir eine Tabelle $A$ mit allen minimalen Entfernungen zu Batterien, die von jeder Batterie
-ereichbar sind. In der Tabelle $A'$ haben wir die zusätzlichen minimalen Entfernungen,
+erreichbar sind. In der Tabelle $A'$ haben wir die zusätzlichen minimalen Entfernungen,
 wenn der entsprechende Wert in $A$ kleiner ist als 3. Außerdem haben wir ein Array $T$, in dem die 
-Anzahl der zusätlichen, batteriefreien Felder jeder Batterie gespeichert ist.
+Anzahl der zusätzlichen, batteriefreien Felder jeder Batterie gespeichert ist.
 
 \subsection{Backtracking}
-Unsere Aufgabe bleibt nun, so einen Pfad von der Startbatterie $s$ zu finden, der durch alle Batterien führt und am Ende alle Ladungen 0
+Unsere Aufgabe bleibt nun, so einen Pfad von der Startbatterie $s$ zu finden, der durch alle Batterien führt,
+sodass am Ende alle Ladungen 0
 betragen.
 Außerdem muss man unbedingt den Aspekt beachten, dass man von einer Batterie zu einer anderen übergehen darf, nur wenn
-die aktuelle Ladung nicht kleiner ist als die Entfernung zwischen den beiden.
+die aktuelle Ladung nicht kleiner ist als die minimale Entfernung zwischen den beiden.
 Darüber hinaus wird die übriggebliebene Ladung mit der an der Stelle der Zielbatterie liegenden Ladung ausgetauscht.
 Wir können auch sofort bemerken, dass es sich gar nicht lohnt, von einer Batterie zu einem Feld, auf dem keine Batterie
-liegt, zu übergehen, weil wir einfach nicht fortsetzen könnten. Der Sonderfall ist hier natürlich die Situation am
+liegt, überzugehen, weil wir einfach nicht fortsetzen könnten. Der Sonderfall ist hier natürlich die Situation am
 Ende der Aufgabe, wenn alle Batterien besucht sind und alle liegenden Ladungen 0 betragen, aber wir mit der aktuellen Ladung übriggeblieben sind.
 Dann müssen wir die aktuelle Ladung noch verbrauchen und es ergibt genauso viel Sinn zu einem batteriefreien sowie zu einem Feld mit einer Batterie
 zu übergehen.\\
-Wenn wir diese Situation ausschließen, können wir bermeken, dass wir stets von einer Batterie zu einer anderen übergehen müssen.\\
+Wenn wir diese Situation ausschließen, können wir bemerken, dass wir stets von einer Batterie zu einer anderen übergehen müssen.\\
 Wir können auch bemerken, dass dieses Problem sehr komplex ist. Schauen wir auf ein vereinfachtes Beispiel dieser Aufgabe.
 
 \subsubsection{Klassifizierung des Problems}\label{sec:classification}
-Angenommen, sind alle Werte in $A$ 1 und alle Batterien haben auch Ladungen 1 (wie im Beispiel \ref{example:1}).
-Nun ist das Ziel der Aufgabe, einen Hamiltonpfad in diesem entstanden Graphen zu finden.
+Angenommen, es sind alle Werte in $A$ 1 und alle Batterien haben auch Ladungen 1 (wie im Beispiel \ref{example:1}).
+Nun ist das Ziel der Aufgabe, einen Hamiltonpfad in diesem entstandenen Graphen zu finden.
 O.b.d.A. können wir annehmen, dass es sich um einen Hamiltonpfad und keinen Hamiltonzyklus handelt.
-Wir starten üblicherweise von der Batterie mit Index 0 und gehen zu nächsten Batterien.
+Wir starten üblicherweise von der Batterie mit Index 0 und gehen zu den nächsten Batterien.
 Wir müssen jedoch anmerken, dass wir bei der letzten Batterie
 die Ladung zur nächsten Batterie nicht weiterleiten können, weil das schon das Ende der Matrix ist.
-In diesem Falle können wir einfach die von der letzten Batterie zur vorletzten gehen.
-Wir zählen dann auch nicht das vorletzte Feld als zweimal besucht.\\
-Das Hamiltonkreisproblem ist ein NP--vollständiges Problem.
+In diesem Falle können wir einfach von der letzten Batterie zur vorletzten gehen.
+Wir zählen dann auch nicht das vorletzte Feld als zweimal besucht (s. Formulierung des Hamiltonkreisproblems).\\
+Das Hamiltonkreisproblem ist ein NP--vollständiges Problem.\cite{garey_johnson_1979}
 Wenn wir mehrere verschiedenen Ladungen und mehr Verbindungen unterschiedlicher Länge hinzufügen, 
-wird das Problem komplexer. Daraux können wir schlussfolgern, dass es sich in unserem Problem
+wird das Problem komplexer. Daraus können wir schlussfolgern, dass es sich in unserem Problem
 auch um NP--Vollständigkeit handelt.\\
 
-Wir sollen auch bemerken, dass die Größe der Eingabe in den Beispielen sehr klein bleibt. Aus diesem entschied ich mih
+Wir sollen auch bemerken, dass die Größe der Eingabe in den Beispielen sehr klein bleibt. Aus diesem Grund entschied ich mich
 für eine weniger effiziente, aber sehr genaue Methode, um diese Aufgabe zu lösen: Backtracking. 
 
-Wir betrachten ein Array $C$, die die Ladungen jeder Batterie enthält. An jeder Stelle $i$ in diesem Array wird die aktuelle
+Wir betrachten ein Array $C$, das die Ladungen jeder Batterie enthält. An jeder Stelle $i$ in diesem Array wird die aktuelle
 Ladung einer Batterie mit dem Eingabeindex $i$ gespeichert.
 
 \subsubsection{Erreichbarkeit}
-Wir sollen zuerst definieren, was wir unter \textit{Erreichen} einer Batterie $c$ von einer $b$ aus verstehen.
-Eine Batterie $c$ kann von einer Batterie $b$ aus erreicht werden, wenn die aktuelle Ladung nicht kleiner ist als die Entfernung 
-an der Stelle $A_{b,c}$. Das bedeutet einfach, dass die Ladung ausreicht, um die Schritte von $b$ zu $c$ zu machen.
+Wir wollen zuerst definieren, was wir unter \textit{Erreichen} verstehen.
+Eine Batterie $c$ kann von einer Batterie $b$ aus erreicht werden, wenn die aktuelle Ladung nicht kleiner
+ist als die in $A_{b,c}$ gespeicherte minimale Entfernung von $b$ nach $c$.
+Das bedeutet einfach, dass die Ladung ausreicht, um die Schritte von $b$ zu $c$ zu machen.
 Außerdem soll $c$ in dem Array $C$ eine Ladung größer als 0 besitzen. So ist $c$ \textit{erreichbar}.\\
 Ein Sonderfall in dieser Definition ist natürlich eine Schleife von $b$ zu sich selbst. 
 In diesem Fall muss der Wert an der Stelle $b$ in der Matrix $T$ mindestens 1 betragen und die aktuelle Ladung muss
-mindestens 2 sein.
+mindestens 2 sein. Das heißt, wir müssen sicherstellen, dass es ein batteriefreies Feld neben dem Feld,
+auf dem $b$ liegt, gibt. Um eine Schleife zu sich selbst durchzuführen, brauchen wir mindestens 2 Schritten:
+zum batterienfreien Nachbarfeld und zurück.
 
 \subsubsection{Rekursion}
-Ich bildete eine rekursive Funktion, die alle möglichen Verbindungen zwischen jeweiligem Paar von Batterien untersucht.
-Bei jedem Lauf der Funktion wird untersucht, zu welcher Batterie und mit wie vielen Schritten übergangen wird.\\
-Wenn es möglich ist, von einer Batterie $a$ aus eine Batterie $b$ in $c$ Schitten zu erreichen, lässt man diese rekursive
-Funktion dann an der Batterie $b$ laufen. Wenn es nicht geht, an einer Stelle fortzusetzten, wird abgebrochen
-und man geht zürück zu der Batterie, an der noch eine Möglichkeit entsteht, von dieser Batterie einen anderen Weg zu nehmen
-und mit einer anderen Anzahl von Schitten und/oder zu einer anderen Batterie zu übergehen. Wenn es zu einem Zustand kommt, dass alle
+Ich bildete eine rekursive Funktion, die alle möglichen Verbindungen zwischen Paaren von Batterien untersucht.
+Bei jedem Lauf der Funktion wird untersucht, zu welcher Batterie und mit wie vielen Schritten übergegangen wird.\\
+Wenn es möglich ist, von einer Batterie $a$ aus eine Batterie $b$ in $c$ Schritten zu erreichen, lässt man diese rekursive
+Funktion dann an der Batterie $b$ laufen. Wenn es nicht geht, an einer Stelle fortzusetzen, wird abgebrochen
+und man geht zurück zu der Batterie, an der noch eine Möglichkeit besteht, von dieser Batterie einen anderen Weg zu nehmen
+und mit einer anderen Anzahl von Schritten und/oder zu einer anderen Batterie überzugehen. Wenn es zu einem Zustand kommt, dass alle
 Batterien entladen sind, also alle Stellen in $C$ 0 betragen, wird dieser Stand als ein Ergebnis behandelt und ausgegeben.\\
 
-Wir können die Funktionsweise dieser Funktion in Analogie zur Tiefensuche (engl. \textit{depth--first serach, DFS}) stellen.
-In diesem Falle haben wir mit einem großen Baum mit einer Wurzel in $s$ zu tun.
+Wir können die Funktionsweise dieser Funktion als Analogie zur Tiefensuche (engl. \textit{depth--first search, DFS}) sehen.
+In diesem Falle haben wir es mit einem großen Baum mit einer Wurzel in $s$ zu tun.
 Jede Kante in einem solchen Baum entspricht einer möglichen
 Verbindung von einer Batterie zu einer anderen mit einer bestimmten Anzahl von Schritten.
-Diese Anzahl an Schritten kann dementsprechend als ein Gewicht an einer Kanten gelten.
-Die Blätter in einem solchen Baum sind natürlich Batterien, die von einer anderen Batterien an einem niedrigeren Niveau liegt.\\
+Diese Anzahl an Schritten kann dementsprechend als ein Gewicht an einer Kante gelten.
+Die inneren Knoten in einem solchen Baum sind natürlich Batterien.
+Eine Verbindung von einem Knoten $a$ auf dem $n$--Niveau zu einem Knoten $b$ auf dem $n+1$--Niveau
+durch eine Kante mit einem Gewicht $c$ bedeutet dann, dass es eine Batterie $a$ gibt, von der wir
+eine Batterie $a$ in $c$ Schritten erreichen können.\\
 
 \begin{figure}[h]
 \begin{tikzpicture}[
@@ -401,59 +409,70 @@ Diese rekursive Funktion nimmt als Parameter einen Eingabeindex $id$, die aktuel
 und ein Array $R$, das die Information über einen aktuellen Pfad von der Batterie 0 zur Batterie $id$ speichert.
 Das Array $R$ speichert die Eingabeindizes der Batterien, die bereits besucht wurden, mit der entsprechenden Anzahl von Schritten,
 die gemacht wurden, um diese Zielbatterie zu erreichen.\\
-Am Anfang der Funktion werden alle erreichbaren Batterien bestimmt. Ich forme dadruch ein Array $N_{id}$, das alle
+Am Anfang der Funktion werden alle erreichbaren Batterien bestimmt. Ich forme dadurch ein Array $N_{id}$, das alle
 erreichbaren Nachbarn von $id$, also die Eingabeindizes der Batterien, mit ihren entsprechenden minimalen Entfernungen enthält.
 Bei der Bildung dieses Arrays stelle ich auch sicher, dass diese Batterien nach ihren verbliebenen Ladungen absteigend
 sortiert sind.\\
-Nun prüfe ich, ob $N_id$ leer ist. Das ist der terminierende Fall in meinem Algorithmus.
-Wenn ja, prüfe ich, ob $T_{id} > 1$. Wenn die Batterie $id$ mindestens zwei batteriefreie Felder besitzt,
+Nun prüfe ich, ob $N_{id}$ leer ist. Das ist der terminierende Fall in meinem Algorithmus.
+Wenn ja, prüfe ich, ob $T_{id} > 1$. Wenn die Batterie $id$ mindestens zwei nacheinander folgende batteriefreie Felder besitzt,
 kann ich die restliche, aktuelle Ladung auf diesen beiden Feldern verbrauchen, indem wir einfach hin und her von einem 
 Feld zum anderen übergehen. 
-Dann erfolgt eine Prüfung, ob das Array $C$ an allen Stellen 0 enthält. Wenn ja, ist $R$ unser Ergebnis und der boolsche Wert 1 wird
-ausgegeben. Andernfalls haben wir kein Ergebnis und der boolsche Wert 0 wird ausgegeben.\\
-Wenn $N_{id}$ leer ich prüfe ich auch, ob $T_{id} = 1$. Wenn ja, können wir die ein restlicher Schritt verbrauchen, 
+Dann erfolgt eine Prüfung, ob das Array $C$ an allen Stellen 0 enthält. Wenn ja, ist $R$ unser Ergebnis und der boolesche Wert 1 wird
+ausgegeben. Andernfalls haben wir kein Ergebnis und der boolesche Wert 0 wird ausgegeben.\\
+Wenn $N_{id}$ leer ist, prüfe ich auch, ob $T_{id} = 1$. Wenn ja, können wir den restlichen Schritt verbrauchen, 
 indem wir zu einem batteriefreien Feld übergehen. Danach prüfen wir, ob das Array $C$ an allen Stellen 0 enthält und die
-aktuelle Ladung 0 beträgt. Wenn ja, ist unser Ergebnis ebenfalls $R$. Der boolsche Wert 1 wird ausgegeben. Andernfalls wird
-der boolsche Wert 0 ausgegeben.\\
-Anschließend, wenn $N_{id}$ leer ist und es keine adjazenten batteriefreien Felder gibt, sammle ich alle erreichbaren Batterien von $id$ aus.
-Ich sortiere sie absteigend nach Entfernung. Danach iteriere ich durch sie. Wenn es eine Entfernung gibt, deren Länge größer ist als 2, kann ich 
-die ganze restliche aktuelle Ladung verbrauchen. Andernfalls kann ich nur so viel Ladung verbrauchen, wie lang die längste Entfernung ist.
-Danach wird geprüft, ob alle Ladungen in $C$ 0 betragen und die aktuelle Ladung gleich 0 ist. Wenn ja, dann ist $R$ unser Ergebnis und 1 wird ausgegeben. Andernfalls wird 0 ausgegeben.\\
-Nun beschreibe ich, was man macht, wenn $N_{id}$ nicht leer ist. Wir iterieren durch $N_{id}$. Jeden iterierten Nachbarn nenne ich $i$.
+aktuelle Ladung 0 beträgt. Wenn ja, ist unser Ergebnis ebenfalls $R$. Der boolesche Wert 1 wird ausgegeben. Andernfalls wird
+der boolesche Wert 0 ausgegeben.\\
+Anschließend, wenn $N_{id}$ leer ist und es keine adjazenten batteriefreien Felder gibt,
+sammle ich alle von $id$ aus erreichbaren Batterien.
+Ich sortiere sie absteigend nach Entfernung. Danach iteriere ich durch sie. Wenn es eine Entfernung gibt,
+deren Länge größer ist als 2, kann ich 
+die ganze restliche aktuelle Ladung verbrauchen. Andernfalls kann ich nur so viel Ladung verbrauchen,
+wie die längste Entfernung beträgt.
+Danach wird geprüft, ob alle Ladungen in $C$ 0 betragen und die aktuelle Ladung gleich 0 ist.
+Wenn ja, dann ist $R$ unser Ergebnis und 1 wird ausgegeben. Andernfalls wird 0 ausgegeben.\\
+Nun beschreibe ich, was man macht, wenn $N_{id}$ nicht leer ist: Wir iterieren durch $N_{id}$.
+Jeden iterierten Nachbarn nenne ich $i$.
 Ich bilde ein Array $D$, in dem die möglichen Entfernungen, also nicht nur die minimale, gespeichert werden. Als erste Entfernung
 füge ich natürlich die minimale Entfernung von $id$ zu $i$. Danach überprüfe ich, ob diese minimale Entfernung größer ist als 2.
-Wenn ja, füge ich in $D$ die Summen von der minimalen Entfernung und vom nächsten Vielfachen von 2 ein, so lange eine solche Summe nicht
+Wenn ja, füge ich in $D$ die Summen von der minimalen Entfernung und vom nächsten Vielfachen von 2 ein,
+so lange eine solche Summe nicht
 größer ist als die aktuelle Ladung. Wenn nicht, prüfe ich den Wert $A'_{id, i}$, ob er mindestens 3 beträgt.
 Wenn ja, füge ich in $D$ die Summen von $A'_{id, i}$ und vom nächsten Vielfachen von 2 ein, so lange eine solche Summe nicht
 größer ist als die aktuelle Ladung.\\
-Danach iteriere ich durch $D$. Jede iterierte Entfernung nenne ich hier $j$. Ich speichere den Wert an der Stelle $i$ im Array $C$ als $l$.
-Ich kopiere $C$ als $C'$ und $R$ als $R'$. Im Array $C'$ speichere ich an der Stelle $i$ die Differenz von der aktuellen Ladung und $j$.
-Ich füge $i$ mit der Anzahl von Schritten $j$ in $R'$ ein. Nun lasse ich die rekursive Funktion mir folgenden Parametern laufen:
+Danach iteriere ich durch $D$. Jede iterierte Entfernung nenne ich hier $j$.
+Ich speichere den Wert an der Stelle $i$ im Array $C$ als $l$.
+Ich kopiere $C$ als $C'$ und $R$ als $R'$.
+Im Array $C'$ speichere ich an der Stelle $i$ die Differenz von der aktuellen Ladung und $j$.
+Ich füge $i$ mit der Anzahl von Schritten $j$ in $R'$ ein. Nun lasse ich die rekursive Funktion mit folgenden Parametern laufen:
 dem Eingabeindex, $l$ als neue aktuelle Ladung, das Array $C'$ und das Array $R'$.\\
-Wenn der augegebene boolsche Wert 1 ist, wird auch 1 ausgegeben und die Funktion bricht ab. Wenn nicht, wird das letzte Element
+Wenn der ausgegebene boolesche Wert 1 ist, wird auch 1 ausgegeben und die Funktion bricht ab. Wenn nicht, wird das letzte Element
 aus dem Array $D$ entfernt und die Entfernung $j+1$ wird betrachtet.\\
 
 Ganz am Anfang ist die erste aktuelle Ladung natürlich die Ladung der Batterie $s$, das heißt, der Startbatterie. An dieser Stelle
 setzen wir im Array $C$ an der Stelle $0$ den Wert 0. Auch wird 0 am Ende des Arrays $R$ angehängt.
 Danach lassen wir unsere rekursive Funktion mit folgenden Parametern laufen: 0 als Eingabeindex, die aktuelle Ladung der Batterie $s$, 
 das Array $C$ und das Array $R$.
-Wenn der ausgegebene boolsche Wert 1 beträgt, wird die Folge von Schritten im gefundenen Pfad aussgegeben. Andernfalls erfolgt
+Wenn der ausgegebene boolesche Wert 1 beträgt, wird die Folge von Schritten im gefundenen Pfad ausgegeben. Andernfalls erfolgt
 eine Meldung, dass kein solcher Pfad gefunden wurde.
 
 \newpage
 \subsection{Laufzeit}\label{sec:time}
 
 $b$ -- Anzahl der Batterien\\
-$l$ -- Länge oder Breite der Matrix $M$\\
+$l$ -- Länge und Breite der Matrix $M$\\
 
 Vorbereitung der Tabellen $A$ und $A'$:
 \begin{itemize}
   \item Einlesen der Batterien: $O(b)$
   \item Bildung des Graphen: $O(l^2)$\\
-  Zuordnung der Brettindizes und Esrstellung der Menge $E$: $O(l^2)$.
+  Zuordnung der Brettindizes und Erstellung der Menge $E$: $O(l^2)$.
   \item Breitensuche: $O(b*l)$\\
-  Die Laufzeit vom Breitensuchealgorithmus ist $O(V + E)$,\cite{cormen:BFS}  $V = l$ und $E \leqslant 4*l$: $O(l+l)$.\\
-  Der Algorithmus wird auf jeder Batterie angewendet: $O(b*l)$.
+  Die Laufzeit vom Breitensuchealgorithmus ist $O(V + E)$.\cite{cormen:BFS}\\
+  In unserem Problem sind $V = l$ und $E \leqslant 4*l$.
+  Jeder Knoten, also jedes Feld in der Matrix, kann maximal 4 Kanten zu seinen 4 Nachbarfeldern besitzen.\\
+  Diese gesamte Laufzeit von BFS ist dann: $O(l+l)\in O(l)$.\\
+  Der Algorithmus wird auf jede Batterie angewendet: $O(b*l)$.
   \item Bestimmung der Schleifen in Knoten: $O(b)$\\
   Für jede Batterie werden die Schleifen in Knoten bestimmt, eine solche Bestimmung läuft in $O(1)$,
   also für alle Batterien: $O(b)$.
@@ -469,21 +488,21 @@ Von jeder Batterie kann man zu $n$ Batterien übergehen.
 Dieser Wert kann maximal $n = b$ betragen, wenn man zu allen Batterien übergehen kann.
 Auch kann ich jede von diesen $n$ Batterien in maximal $m = \frac{1}{2}*max(x: x \in C)$
 möglichen Anzahlen von Schritten erreichen.
-Das folgende Prdukt stellt dar, wie viele Verbindungen es von einem Knoten zu seinen Blättern in einem Baum maximal existieren kann: $n * m$.
+Das folgende Produkt stellt dar, wie viele Verbindungen es von einem Knoten zu seinen Blättern in einem Baum maximal existieren kann: $n * m$.
 Nun müssen wir diesen Wert noch an alle Knoten in diesem Baum übertragen. Das heißt, dieses Produkt wird zur Basis einer Potenz.
 Der Exponent dieser Potenz entspricht maximal $s = \sum_{i=0}^C{C_i}$, wie das in den Beispielen \ref{example:1} und \ref{example:2} gut
-sichtbar ist. In worst-case ist dann die Laufzeit:
+sichtbar ist. Im worst-case ist dann die Laufzeit:
 \begin{align*}
 O((n*m)^s), \text{wobei } n = b.
 \end{align*}
-Diese Lauzeit kann horrend scheinen, aber werfen einen Blick wir auf unsere Beispiele.\\
+Diese Laufzeit kann horrend scheinen, aber werfen wir einen Blick auf unsere Beispiele.\\
 Im Beispiel \ref{example:1} haben wir $b = 100$ Batterien. Von jeder Batterie kann man maximal $n = 4$ andere Batterien erreichen.
 Zwischen jedem Paar von Batterien kann man maximal einen Schritt machen, also $m = 1$. Die Summe aller Ladungen beträgt $s=100$.
 Wir kommen auf die folgende Laufzeit: $O(4 * 1)^{100}$.\\
-Beim Beispiel \ref{example:2} haben wir eine ähnliche Sitaution: $b = 121$, $n = 4$, $m = 1$, $s = 2* 121 = 242$.\\
+Beim Beispiel \ref{example:2} haben wir eine ähnliche Situation: $b = 121$, $n = 4$, $m = 1$, $s = 2* 121 = 242$.\\
 So kommen wir auf die folgende Laufzeit: $O(4 * 1)^{242}$.
 Dazu kommt noch die eingebaute Heuristik, die die erreichbaren Batterien nach ihren Ladung absteigend sortiert.
-Sie bechleunigt sehr deutlich den Lauf des Programms.\\
+Sie beschleunigt sehr deutlich den Lauf des Programms.\\
 In anderen Beispielen (außer dem Beispiel \ref{example:5}/\ref{example:7} ) läuft mein Programm auch sehr schnell, weil $s$ sehr gering bleibt. 
 
 
@@ -507,7 +526,6 @@ einen Schritt machen:
 Diese Methode wurde angewendet, um das Beispiel \ref{example:3} zu lösen, das normalerweise unlösbar bleibt.
 Das Ergebnis dieses Versuchs ist im Beispiel \ref{example:3+} zu finden.
 
-\nocite{*}
 \printbibliography
 
 \newpage
@@ -527,8 +545,8 @@ Bei der Generierung einer Folge von Schritten unterscheide ich zwischen zwei Sit
   \item \textit{Einfügen} -- in dieser Situation handelt es sich darum, dass wir von einer Batterie $a$ zu $b$ übergehen und müssen danach
    zurück zu $a$ kommen.
 \end{itemize}
-Die erste Sitaution ist einfach und sehr intuitiv. Die zweite ist deutlich schwieriger, weil man beim per-Hand-Lösen nachdenken muss,
-wie man die restliche Ladung von $a$ behandelt. Eine solche Situation ist kontraintuitiv besonders, wenn mehrere Einfügen-Sitautionen
+Die erste Situation ist einfach und sehr intuitiv. Die zweite ist deutlich schwieriger, weil man beim per-Hand-Lösen nachdenken muss,
+wie man die restliche Ladung von $a$ behandelt. Eine solche Situation ist kontraintuitiv besonders, wenn mehrere Einfügen-Situationen
 nacheinander auftreten.\\
 Ich bilde ein Array $W$, in dem ich die Reihenfolge der Batterien speichere.
 Ich fordere vom Benutzer meines Programms, dass er eine Anzahl der Batterien eingibt, die mindestens 1 ist.
@@ -565,7 +583,7 @@ Ich lege auch eine Menge $used$ fest, in der die bestimmten Koordinaten enthalte
 Wie beim Generieren der Reihenfolge muss beachtet werden, 
 dass wir bei einer Einfügen--Situation die Entfernungen in $F$ spiegeln. Aus dem Grund bediene ich
 mich auch eines Stapelspeichers, der ein Paar von ganzen Zahlen speichert: einen Index und eine Entfernung.\\
-Wir iterieren durch $W$ vom ersten bis zum vorletzen Element. Den Iterator nenne ich $i$.\\
+Wir iterieren durch $W$ vom ersten bis zum vorletzten Element. Den Iterator nenne ich $i$.\\
 Ich generiere eine ganze Zahl aus dem Bereich $[1,5]$, die ich $dist$ nenne.
 Ich kopiere diese Zahl als $currDist$. Ich überprüfe, ob der Index des ersten Elements im Stapelspeicher 
 gleich $v_{i+1}$ ist. Wenn ja, wird $currDist$ als die Entfernung des ersten Elements im Stapelspeicher gespeichert.
@@ -592,12 +610,12 @@ Zunächst ohne möglichen Minuszeichen.
 Die $y$--Koordinate lässt sich einfach bestimmen: $y = currDist - |x|$.
 Nach Bedarf ordne ich dann die Minuszeichen nach der Bestimmung von Koordinaten $x$ und $y$ zu.
 Anschließend addiere ich zu $x$ und $y$ entsprechend die $x$-- und $y$--Koordinaten von $prevPoint$.\\
-Nun sollen wir bemerken, dass es zu einer Situation kommen kann, dass ein neu enstandenes Paar von Koordinaten 
+Nun sollen wir bemerken, dass es zu einer Situation kommen kann, dass ein neu entstandenes Paar von Koordinaten 
 schon benutzt wurde und einer anderen Batterie zugeordnet ist. Das prüfe ich mit Hilfe von $used$.
 Aus diesem Grund müssen wir einfach eine neue $coorID$ generieren.
 In einem Array $free$ kennzeichne ich jedes Mal die gerade generierte $coorID$ als bereits benutzt.
 Wenn es im Array $free$ Stellen gibt, an denen noch 0 steht, also das bedeutet, dass diese Kooridnatenkombination nicht benutzt wurde, haben wir noch ein mögliches Paar, das wir generieren können.
-Der Generator generiert die Zahlen unabhögig davon, ob sie in $free$ markiert wurden.
+Der Generator generiert die Zahlen unabhängig davon, ob sie in $free$ markiert wurden.
 Der Generator folgt jedoch der stetigen Gleichverteilung und eine Situation, in der
 wir jedes Mal die gleiche Zahl generieren ist minimal.\\
 Da ich eine ganzzahlige Entfernung aus dem Bereich $[1,5]$ generiere, kann es bei größeren $n$ zu Situationen kommen, 
@@ -605,7 +623,7 @@ dass alle möglichen $coorID$ benutzt werden und man kann einer Batterie ein Paa
 in der Entfernung $nextDist$ von $prev$ befinden. So muss ich an dieser Stelle $currDist$ um 1 vergrößern und die ganze
 Operation von Bestimmung eines Koordinatenpaars läuft vom Anfang an. Wenn ich ein passendes Paar von Koordinaten finde,
 speichere ich $currDist$ als $dist$, markiere $v_{i+1}$ in $vis$ als besucht, füge speichere die Koordinaten
-an der Stelle $v_{i+1}$ im Array $coor$ und füge dieses Parr in $used$ ein.\\
+an der Stelle $v_{i+1}$ im Array $coor$ und füge dieses Paar in $used$ ein.\\
 Anschließend müssen wir noch die gefundene Entfernung am Ende des Arrays $F$ anhängen.
 Wir erinnern uns auch an die Spiegelung, die ich früher erwähnte. Wir müssen nun prüfen, ob der Index
 des ersten Elements im Stapelspeicher gleich $v_{i+1}$ ist.
@@ -627,8 +645,8 @@ $0 \longrightarrow {\color{red}1} \longrightarrow {\color{blue}2} \longrightarro
 $2 \longrightarrow {\color{red}3} \longrightarrow {\color{blue}1} \longrightarrow {\color{blue}1} \longrightarrow
  {\color{red}3} \longrightarrow 4 \longrightarrow 2$
 \caption{Eine Erweiterung der Abb. \ref{fig:ex-order}. Die Zahlen in der unteren Reihenfolge stehen für
-die Entfernungen zwischen jeweiliger über ihnen stehenden Indizes, also die Zahlen in $F$. Die Farbung weist darauf hin, dass
-die zweite Entfernung von der ersten enifach gespiegelt, kopiert wurde, weil es sich an dieser Stelle um
+die Entfernungen zwischen jeweiliger über ihnen stehenden Indizes, also die Zahlen in $F$. Die Färbung weist darauf hin, dass
+die zweite Entfernung von der ersten einfach gespiegelt, kopiert wurde, weil es sich an dieser Stelle um
 eine Einfügen--Situation handelte.}
 \label{fig:ex-dist}
 \end{figure}
@@ -636,12 +654,12 @@ eine Einfügen--Situation handelte.}
 Danach kommen wir zur Generierung von Ladungen. Dazu lege ich ein Array $H$ und ein Array $P$.
 Es ist zu beachten, dass die Ladung bei einer Batterie $a$ mindestens so groß sein muss wie groß
 die Entfernung zwischen $a$ und $b$ ist, wenn es sich bei $a$ um eine Hinzufügen--Situation handelt.
-Wemn es eine Einfügen--Situation ist, muss die Ladung bei einer Batterie $a$ mindestens so groß sein wie
+Wenn es eine Einfügen--Situation ist, muss die Ladung bei einer Batterie $a$ mindestens so groß sein wie
 die Entfernung von $a$ zu $b$ und die Entfernung zwischen $b$ und $c$ zusammen. Also muss eine
 solche Ladung mindestens die Summe der Entfernungen zwischen $a$, $b$ und $b$, $c$ betragen.\\
-Ich iteriere durch $W$. Jeden interierten Index nenne ich $i$.
+Ich iteriere durch $W$. Jeden iterierten Index nenne ich $i$.
 Ich überprüfe, ob der es sich an der Stelle $W_i$ im Array $H$ bereits einen Wert gibt.
-Wenn ja, beduetet es, dass wir mit einer Einfügen--Situation bei $W_i$ zu tun hatten und ich
+Wenn ja, bedeutet es, dass wir mit einer Einfügen--Situation bei $W_i$ zu tun hatten und ich
 addiere an der Stelle $P_{W_i}$ im Array $H$ den Wert $F_i$.\\
 Andernfalls schreibe ich an dieser Stelle den Wert $F_i$. Außerdem speichere ich gleichzeitig 
 an der Stelle $W_i$ im Array $P$ den Wert $W_{i-1}$ (ich überprüfe davor, ob $i$ nicht 0 beträgt).\\
@@ -679,7 +697,7 @@ um die $H_i$ vergrößert wurde.}
 Anschließend durchsuche ich das Array von allen Koordinaten, um die größte Koordinate zu finden.
 Ich speicher sie als $maxCoor$. Ich vergrößere diese Variable um 1. $maxCoor$ wird jetzt zur
 Länge und zur Breite der quadratischen, zu generierenden Matrix $M$.
-Ich tue das, um Schelifen bei den Batterien am Rand zu erlauben.
+Ich tue das, um Schleifen bei den Batterien am Rand zu erlauben.
 Es macht die Aufgabe für eine Person vielleicht nicht schwieriger, aber es macht die Aufgabe schwieriger für den Rechner.\\
 Am Ende wird die Länge/Breite der Matrix, die Koordinaten und die Ladung der Startbatterie, die Anzahl der restlichen Batterien
 und ihre Koordinaten und Ladungen im von BWINF vorgeschlagenen Format als eine Textdatei ausgegeben.
@@ -690,10 +708,10 @@ $n$ -- die Anzahl der zu generierenden Batterien
 
 \begin{itemize}
   \item Generierung der Reihenfolge: $O(n)$\\
-  In worst-case kann das augegebene Array maximal der Länge $2n$ sein, also: $O(2n)$.
+  In worst-case kann das ausgegebene Array maximal der Länge $2n$ sein, also: $O(2n)$.
   \item Generierung der Entfernungen und Koordinaten: $O(c*n)$ (worst-case)\\
   Das Anhängen der Entfernung im Array $F$ erfolgt in $O(2n)$.\\
-  Wir brauchen maximal $O(4*currDist)$, um ein Paar von Koordinaten einer Etnfernung $currDist$
+  Wir brauchen maximal $O(4*currDist)$, um ein Paar von Koordinaten einer Entfernung $currDist$
   zu finden. $currDist$ ist am Anfang maximal 5. In average-case, wenn wir $currDist$ nicht vergrößern,
   beträgt die Laufzeit dann $O(1)$. In worst-case schätze ich die Anzahl der Vergrößerungen von $currDist$
   nur als eine Konstante $c$ ab, wobei $c \ll n$. Nach den durchgeführten Experimenten ist es sehr unwahrscheinlich,
@@ -718,7 +736,7 @@ einen Brettindex \texttt{boardID} und einen Eingabeindex \texttt{inputID}.
 Wir erstellen zwei Matrizen: \texttt{distances} und \texttt{distancesAux}, die den Matrizen 
 $A$ und $A'$ entsprechen. Sie sind jeweils auf folgender Weise erstellt: \texttt{vector< vector<int> >}.
 Außerdem erstellen wir noch ein Array \texttt{extraTiles}, das dem Array $T$ entspricht.
-Bei der Erstellung eines Objektes dieser Klasse kann man ein optionalen boolschen Parameter \texttt{slant}
+Bei der Erstellung eines Objektes dieser Klasse kann man ein optionalen booleschen Parameter \texttt{slant}
 eingeben, der schräge Übergänge erlaubt. (s. Abschnitt \ref{sec:slant}) \\
 
 In dieser Klasse wird die Textdatei eingelesen. Mit Hilfe der eingelesenen Größe der Matrix $M$\\ \texttt{boardDimension},
@@ -731,9 +749,9 @@ Für die Bestimmung des Brettindex einer Batterie $b$ bediene ich mich der folge
 \begin{align*}
 \texttt{boardID}(b) = (b_y-1) * \texttt{boardDimension} + b_x-1
 \end{align*}
-Danach füge ich jeweilige Baterie in einen Map--Container \texttt{batteryToBoardID} mit ihrem entsprechenden Brettindex
+Danach füge ich jeweilige Batterie in einen Map--Container \texttt{batteryToBoardID} mit ihrem entsprechenden Brettindex
 und gleich danach in einen Map--Container \texttt{batteryToBoardID} ein. Im ersten dienen die Batterien als Schlüssel und werden
-ihenen Brettindizes zugeordnet und im zweiten passiert das Gleiche aber andersherum: mit Brettindizes als Schlüsseln.\\
+ihnen Brettindizes zugeordnet und im zweiten passiert das Gleiche aber andersherum: mit Brettindizes als Schlüsseln.\\
 Danach erfolgt das Gleiche, wir fügen jeweilige Batterie in Map--Container \texttt{batteryToInputID} und
 \texttt{inputIDToBattery} ein, diesmal mit ihren entsprechenden Eingabeindizes.\\
 
@@ -742,7 +760,7 @@ erstellt, das die Nachbarn jedes Brettindex in der Matrix in Form von
 \texttt{pair}(Brettindex des Nachbarn, die Ladung des Nachbarn) enthält.\\
 In der Methode \texttt{determineConnections()} wird die Matrix \texttt{board} iteriert.
 Jedem Brettindex werden ihre Nachbarn im Array \texttt{neighbors} gespeichert.
-Bei jeder Iteration werden die Brettindizes der Nachbarn anhand der obenstehenden Formel bestimmt.
+Bei jeder Iteration werden die Brettindizes der Nachbarn anhand der oben stehenden Formel bestimmt.
 Die Ladung an einer Stelle rufen wir aus der Matrix \texttt{board} ab. Wir speichern die beiden Informationen
 im genannten Array. So durchlaufen wir alle Nachbarn jeder Stelle in der Matrix $M$.
 Am Ende fügen wir das Array \texttt{neighbors} am Ende des Arrays \texttt{nodes}.\\
@@ -776,26 +794,26 @@ Nun wenn \texttt{battDistances} an der Stelle \texttt{currNeighInputID} gleich 2
 wird der Wert in \texttt{battDistancesAux} an der Stelle \texttt{currNeighInputID} aktualisiert, wenn
 er größer ist als $\texttt{currDist} + 1$, oder wenn noch keinen solchen Wert gibt, wird als $\texttt{currDist} + 1$
 gespeichert.\\
-Andernaflls wird in \texttt{battDistances} an der Stelle \texttt{currNeighInputID} der Wert $\texttt{currDist} + 1$ gespeichert.
-Nun nur wenn $\texttt{currDist} + 1$ größer ist als 2, wird \texttt{neighBoardID} als besucht in \texttt{vis} gekennzeichent.\\
+Andernfalls wird in \texttt{battDistances} an der Stelle \texttt{currNeighInputID} der Wert $\texttt{currDist} + 1$ gespeichert.
+Nun nur wenn $\texttt{currDist} + 1$ größer ist als 2, wird \texttt{neighBoardID} als besucht in \texttt{vis} gekennzeichnet.\\
 Wenn es keine weiteren Brettindizes in der Warteschlange gibt, füge ich das Array \texttt{battDistances}
 an der Stelle von \texttt{currInputID} in \texttt{distances} ein.
 Das Gleiche erfolgt für das Array \texttt{battDistancesAux}. Es wird in \texttt{distancesAux} an der Stelle
 \texttt{currInputID} gespeichert.\\
 
 Die Methode \texttt{checkOneTile(Battery b)} prüft, ob es sich neben dem Feld, auf dem die Batterie \texttt{b}
-liegt, ein betteriefreies Feld befindet.\\
+liegt, ein batteriefreies Feld befindet.\\
 Es wird das Array \texttt{nodes} an der Stelle, die dem Brettindex von \texttt{b} entspricht, iteriert.
 Es wird überprüft, ob mindestens ein Nachbar von \texttt{b} eine Ladung von 0 besitzt, das heißt, auf
 diesem Feld keine Batterie liegt. Es wird 1 ausgegeben, falls es ein Feld gibt, auf dem keine Batterie liegt.
 Andernfalls wird 0 ausgegeben.\\
 
 Die Methode \texttt{checkTwoTiles(Battery b)} prüft, ob sich neben dem Feld, auf dem die Batterie \texttt{b}
-liegt, ein betteriefreies Feld befindet und dann überprüft, ob es noch ein batteriefreis Feld neben diesem
+liegt, ein batteriefreies Feld befindet und dann überprüft, ob es noch ein batteriefreies Feld neben diesem
 Feld gibt.\\
-Diese Funkiton funktioniert auf ähnlicher Weise wie die Methode \texttt{checkOneTile}.
+Diese Funktion funktioniert auf ähnlicher Weise wie die Methode \texttt{checkOneTile}.
 Nun iterieren wir noch durch das Array von Nachbarn vom batteriefreien Nachbarn von \texttt{b} in \texttt{nodes}.
-Wenn es ein solches betteriefreie Feld gibt, wird 1 ausgegeben. Andernfalls wird 0 ausgegeben.\\
+Wenn es ein solches batteriefreie Feld gibt, wird 1 ausgegeben. Andernfalls wird 0 ausgegeben.\\
 
 Im Konstruktor dieser Klasse lassen wir die Methoden \texttt{readFile} und dann \texttt{determineConnections}
 laufen. Danach für jede Batterie lassen wir die Methode \texttt{BFS} laufen.
@@ -824,7 +842,7 @@ und eine Kopie des Arrays $C$ \texttt{currCharges}, also ein Array, das die Ladu
 Es werden ein Array \texttt{reach} in Form von \texttt{vector<pair<int, int> >} und ein Array \texttt{poss} in
 Form von \texttt{vector<tuple<int, int, int> >} gebildet. Die beiden haben die gleiche Funktion, aber 
 das zweite wird benutzt, um die Daten auf das erste vorzubereiten.\\
-Es wird die Tabelle \texttt{dist} an der Stelle \texttt{id} iteriert. Jeden interierten Eingabeindex
+Es wird die Tabelle \texttt{dist} an der Stelle \texttt{id} iteriert. Jeden iterierten Eingabeindex
 einer Batterie nenne ich hier \texttt{i}.
 Wenn \texttt{i} und \texttt{id} gleich sind, prüfe ich, ob \texttt{extraTiles} an der Stelle \texttt{id}
 größer ist als 0 und ob \texttt{charge} mindestens 2 beträgt. Wenn ja, werden \texttt{i} und \texttt{extraTiles}
@@ -841,28 +859,28 @@ Dieses fertige Array wird am Ende ausgegeben.\\
 Nun kommen wir zur rekursiven Funktion \texttt{next}, die folgende Parameter nimmt: 
 einen Eingabeindex \texttt{id}, eine aktuelle Ladung \texttt{charge}, eine Kopie vom Array $C$ \texttt{status} und eine Kopie des
 Arrays $R$ mit dem Ergebnispfad \texttt{result}.\\
-Wir beginnen mit einem Lauf der Methode \texttt{checkReachability}, die die von der Batterie \texttt{id} aus erriechbaren Batterien
+Wir beginnen mit einem Lauf der Methode \texttt{checkReachability}, die die von der Batterie \texttt{id} aus erreichbaren Batterien
 findet. Diese Liste speichern wir unter \texttt{neighbors}. Nun prüfen wird, ob diese Liste leer ist.
 Wenn ja, haben wir folgende Fallunterscheidungen.\\
 Wenn \texttt{charge} gleich 0 ist, prüfen wir im Array \texttt{status}, ab alle Batterien entladen sind.
-Wenn ja, wird \texttt{foundPath} als \texttt{result} gespeichert und ein boolscher Wert 1 ausgegeben. Andernfalls wird 0 ausgegeben.\\
+Wenn ja, wird \texttt{foundPath} als \texttt{result} gespeichert und ein boolescher Wert 1 ausgegeben. Andernfalls wird 0 ausgegeben.\\
 Wenn der Wert an der Stelle \texttt{id} im Array \texttt{extraTiles} größer ist als 2, wird am Ende des Arrays \texttt{result}
--1 mit der restlichen aktuellen Ladung angehängt. Danach wir geprüft, ob alle Ladungen im Arrax \texttt{status} 0 betragen.
-Wenn ja, wird \texttt{foundPath} als \texttt{result} gespeichert und ein boolscher Wert 1 ausgegeben. Andernfalls wird 0 ausgegeben.\\
+-1 mit der restlichen aktuellen Ladung angehängt. Danach wir geprüft, ob alle Ladungen im Array \texttt{status} 0 betragen.
+Wenn ja, wird \texttt{foundPath} als \texttt{result} gespeichert und ein boolescher Wert 1 ausgegeben. Andernfalls wird 0 ausgegeben.\\
 Wenn der Wert an der Stelle \texttt{id} im Array \texttt{extraTiles} gleich 1 ist, wird am Ende des Arrays \texttt{result}
--1 mit dem Wert 1 angehängt. \texttt{charge} wird um 1 verkleinert. Danach wird geprüft, ob alle Ladungen im Arrax \texttt{status} 0 betragen
+-1 mit dem Wert 1 angehängt. \texttt{charge} wird um 1 verkleinert. Danach wird geprüft, ob alle Ladungen im Array \texttt{status} 0 betragen
 und ob \texttt{charge} gleich 0 ist.
-Wenn ja, wird \texttt{foundPath} als \texttt{result} gespeichert und ein boolscher Wert 1 ausgegeben. Andernfalls wird 0 ausgegeben.\\
+Wenn ja, wird \texttt{foundPath} als \texttt{result} gespeichert und ein boolescher Wert 1 ausgegeben. Andernfalls wird 0 ausgegeben.\\
 In allen anderen Fällen wird nun ein Array \texttt{allNeighbnors} gebildet. In das Array füge ich alle Eingabeindizes und alle
-minimale Entfernungen der Batterien, die erreichbar sind, unabhägig davon, ob sie entladen sind oder nicht.
-Ich sortiere dieses Array absteigend nach den minimlaen Entfernungen.
+minimale Entfernungen der Batterien, die erreichbar sind, unabhängig davon, ob sie entladen sind oder nicht.
+Ich sortiere dieses Array absteigend nach den minimalen Entfernungen.
 Danach iteriere ich durch das Array \texttt{allNeighbors} und wenn ich auf eine minimale Entfernung komme, die
 nicht kleiner ist als 3, hänge ich am Ende des Arrays \texttt{result} ihren entsprechenden Eingabeindex mit der restlichen aktuellen Ladung an.
 Gleichzeitig wird die Iteration abgebrochen.
 Andern falls, wenn ich auf eine minimale Entfernung komme, die kleiner ist als 3, hänge ich am Ende des Arrays \texttt{result} ihren entsprechenden Eingabeindex mit dieser minimalen Länge an. Von \texttt{charge} wird der Wert von dieser minimalen Entfernung abgezogen.
 Gleichzeitig wird die Iteration abgebrochen.\\
-Danach wird geprüft, ob alle Ladungen im Arrax \texttt{status} 0 betragen und ob \texttt{charge} gleich 0 ist.
-Wenn ja, wird \texttt{foundPath} als \texttt{result} gespeichert und ein boolscher Wert 1 ausgegeben. Andernfalls wird 0 ausgegeben.\\
+Danach wird geprüft, ob alle Ladungen im Array \texttt{status} 0 betragen und ob \texttt{charge} gleich 0 ist.
+Wenn ja, wird \texttt{foundPath} als \texttt{result} gespeichert und ein boolescher Wert 1 ausgegeben. Andernfalls wird 0 ausgegeben.\\
 Nun kommen wir zum Fall, wenn \texttt{neighbors} nicht leer ist. Wir iterieren durch dieses Array.
 Unter \texttt{neighID} speichere ich den iterierten Eingabeindex und unter \texttt{minDist} speichere ich die iterierte minimale Entfernung.
 Ich bilde ein Array \texttt{nieghDistances}, das alle Entfernungen zwischen \texttt{id} und \texttt{neighID} enthält.
@@ -878,11 +896,11 @@ eine Kopie von \texttt{result} und speichere sie als \texttt{cpresult}. An der S
 speichere ich die Differenz von \texttt{charge} und der iterierten Entfernung. Am Ende des Arrays \texttt{cpresult} hänge ich
 \texttt{neighID} und die iterierte Entfernung.
 Danach lasse ich die Funktion \texttt{next()} rekursiv mit folgenden Parametern laufen: \texttt{neighID} als Eingabeindex,
-\texttt{nextCharge} ale aktuelle Ladung, \texttt{cpstatus} als eine Kopie von $C$ und \texttt{cpresult} als eine Kopie von $R$.
+\texttt{nextCharge} als aktuelle Ladung, \texttt{cpstatus} als eine Kopie von $C$ und \texttt{cpresult} als eine Kopie von $R$.
 Den ausgegebenen Wert speichere ich als \texttt{found}. Wenn \texttt{found} 1 beträgt gebe ich 1 aus.
 Andernfalls wird das letzte Element aus dem Array \texttt{cpresult} entfernt.\\
 
-Bei der Deklarierung dieser Klassen werden, wie beschrieben, die erwähnten Matrizen und Arrays aus der Klasse \texttt{Graph}
+Beim Deklarieren dieser Klassen werden, wie beschrieben, die erwähnten Matrizen und Arrays aus der Klasse \texttt{Graph}
 abgerufen. Ein Array \texttt{startStatus} wird gebildet, in dem die Ladungen jeder Batterie gespeichert werden. 
 Als \texttt{startCharge} speichere ich die erste aktuelle Ladung der Batterie \texttt{start}. An der Stelle 0 im Array
 \texttt{startStatus} wird 0 gesetzt. Ich bilde ein Array \texttt{results}, das dem Array $R$ entspricht.
@@ -902,7 +920,7 @@ die alle anderen Batterien (also nicht die Startbatterie) speichert. Für den Zu
 \texttt{std::random\_device}\\
 
 Die Methode \texttt{generateOrder()} generiert die Reihenfolge, in der die Batterien besucht werden. Ich bilde ein Array
-\texttt{num}, ein Array \texttt{generated} und einen Stapelspeicher \texttt{help}. Das erste Array enthälz die generierte Reihenfolge.
+\texttt{num}, ein Array \texttt{generated} und einen Stapelspeicher \texttt{help}. Das erste Array enthält die generierte Reihenfolge.
 Wir fügen 0 in es ein, weil die Reihenfolge stets mit der Startbatterie beginnt.\\
 Mit Hilfe von \texttt{std::uniform\_real\_distribution} generiere ich \texttt{batNum -1} rationale Zahlen im Bereich $[0, 1)$.
 Ich runde sie dann auf Einer und füge in das Array \texttt{generated} ein. Das sind meine generierten Situationen: 
@@ -917,8 +935,8 @@ Anschließend erfolgt eine Ausgabe vom Array \texttt{num}.\\
 
 In der Methode \texttt{generateDistances()} werden die minimalen Entfernungen zwischen Batterien und ihre Koordinaten generiert.
 Es wird ein Array \texttt{v} mit der Reihenfolge als Parameter genommen.
-Es werden folgende Arrays gebildet: \texttt{num} fürs Speichern der minimalen Entfernungen, \texttt{vis}, das boolsche Werte
-enthält, fürs Speichern die Batterien, für die koordinaten bestimmt wurden; \texttt{coor}, das Paar von
+Es werden folgende Arrays gebildet: \texttt{num} fürs Speichern der minimalen Entfernungen, \texttt{vis}, das boolesche Werte
+enthält, fürs Speichern die Batterien, für die Koordinaten bestimmt wurden; \texttt{coor}, das Paar von
 ganzzahligen Koordinaten speichert.
 Außerdem bilde ich eine Menge \texttt{used}, die alle bereits benutzten Koordinaten speichert.
 Anschließend bilde ich einen Stapelspeicher \texttt{help}, der Paare von ganzen Zahlen, dem Index und der Entfernung, speichert.\\
@@ -942,11 +960,11 @@ Zu den Variablen \texttt{x} und \texttt{y} werden die Koordinaten von \texttt{pr
 Danach wird \texttt{coorID} im Array \texttt{free} mit \texttt{true} gekennzeichnet. Dann bekommt 
 \texttt{all} den Wert \texttt{true}. Es wird geprüft, ob an allen Stellen des Arrays \texttt{free} 1 steht.
 Wenn nicht, wird \texttt{all} zu \texttt{false}. Die innere \texttt{do while}--Schleife wird
-weiteriteriert, wenn das gefundene Paar von Koordinaten \texttt{x} und \texttt{y} sich bereits
+weiter iteriert, wenn das gefundene Paar von Koordinaten \texttt{x} und \texttt{y} sich bereits
 in der Menge \texttt{used} befindet und ob \texttt{all} gleich 0 ist. Die Suchoperation wird in der Laufzeitbetrachtung vernachlässigt.
 Wenn nicht, bekommt \texttt{dist} den Wert \texttt{currDist}. \texttt{currDist} wird um 1 vergrößert.
 Hier endet die äußere \texttt{do while}--Schleife und wenn \texttt{all} \texttt{false} wird die Schleife abgebrochen.\\
-An der Stelle \texttt{nextIndex} im Array \texttt{coor} wird das Par von neu gefundenen Koordinaten gespeichert.
+An der Stelle \texttt{nextIndex} im Array \texttt{coor} wird das Paar von neu gefundenen Koordinaten gespeichert.
 Diese Paar wird auch in die Menge \texttt{used} eingefügt. \texttt{nextIndex} wird im Array \texttt{vis} mit 1 gekennzeichnet.\\
 Danach wird geprüft, ob der Index des ersten Elements aus \texttt{help} gleich \texttt{nextIndex} ist.
 Wenn ja, wird am Ende des Arrays \texttt{num} die Entfernung dieses ersten Elements angehängt und aus dem Stapelspeicher ausgekellert.
@@ -954,7 +972,7 @@ Andernfalls, wird am Ende des Arrays \texttt{num} der Wert \texttt{dist} angehä
 \texttt{dist} wird in \texttt{help} eingekellert. Hier endet die Iteration von \texttt{v}.\\
 Anschließend wird die kleinste Koordinate von allen gefunden. Sie wird als \texttt{minimal} gespeichert.
 Dieser Wert wird mal -1 multipliziert und 2 wird dazu addiert. 
-Nun vegrößern wir alle Koordinaten im Array \texttt{coor} um den Wert \texttt{minimal}.\\
+Nun vergrößern wir alle Koordinaten im Array \texttt{coor} um den Wert \texttt{minimal}.\\
 Anschließend werden das Array \texttt{num} und das Array \texttt{coor} ausgegeben.\\
 
 Die Methode \texttt{generateCharges()} generiert Ladungen für jede Batterie. Sie nimmt als Parameter ein
@@ -965,7 +983,7 @@ Als \texttt{currDist} speichere ich den Wert im Array \texttt{dist} an der Stell
 Wenn der Wert an der Stelle \texttt{v}$_i$ im Array \texttt{ch} gleich 0 ist, stelle ich an dieser Stelle den Wert \texttt{currDist}
 und wenn der Wert \texttt{v}$_i$ nicht 0 ist, wird der Wert \texttt{v}$_{i-1}$ an der Stelle \texttt{v}$_i$ im Array \texttt{prev}
 gespeichert.
-Anderfalls, wenn der Wert an der Stelle \texttt{v}$_i$ im Array \texttt{ch} nicht gleich 0 ist, addiere ich
+Andernfalls, wenn der Wert an der Stelle \texttt{v}$_i$ im Array \texttt{ch} nicht gleich 0 ist, addiere ich
 zu dem Wert an der Stelle \texttt{prev}$_{\texttt{v}_i}$ im Array \texttt{ch} den Wert \texttt{currDist}.\\
 Danach wird das Array \texttt{ch} iteriert. Den Iterator nenne ich $i$.\\
 Wen der Wert an der Stelle $i$ im Array \texttt{ch} gleich 0 ist, wird ein ganzzahliger Wert \texttt{multip} im Bereich $[1,3]$ anhand 
@@ -981,7 +999,7 @@ Ich iteriere durch die Liste von Koordinaten und suche nach der größten Koordi
 \texttt{maximal}. Ich vergrößere \texttt{maximal} um 1. Danach speichere ich diesen Wert als \texttt{boardDimension},
 also die Länge der generierten Matrix.\\
 Danach speichere ich unter \texttt{start} die Koordinaten und die Ladung der Startbatterie.
-Danach forlgt eine Iteration vom Array \texttt{coor} vom Index 1. 
+Danach folgt eine Iteration vom Array \texttt{coor} vom Index 1. 
 Bei jedem iterierten Paar von Koordinaten speichere ich auch die dazugehörige Ladung als ein Objekt der Klasse \texttt{Battery}
 und füge es in die Menge \texttt{batteries} ein.\\
 
@@ -994,17 +1012,17 @@ Dieser Wert muss mindestens 1 betragen. Er wird als \texttt{batNum} gespeichert.
 Es werden folgende Arrays gebildet: \texttt{order}, \texttt{distances}, \texttt{coordinates} und \texttt{charges}.
 Man lässt die Funktion \texttt{generateOrder} laufen und das Ergebnis wird als \texttt{order} gespeichert.
 Danach benutzt man dieses Array als Parameter in der Funktion \texttt{generateDistances}.
-Das erste ausgegebene Ergbenis dieser Funktion wird als \texttt{distances} und das zweite als \texttt{coordinates} gespeichert.
+Das erste ausgegebene Ergebnis dieser Funktion wird als \texttt{distances} und das zweite als \texttt{coordinates} gespeichert.
 Danach erfolgt ein Lauf der Funktion \texttt{generateCharges} mit \texttt{order} und \texttt{coordinates} als Parameter.
-Das ausgegebene Ergbenis speichere ich als \texttt{charges}.
+Das ausgegebene Ergebnis speichere ich als \texttt{charges}.
 Anschließend lässt man die Funktion \texttt{prepareOutput} mit \texttt{charges} und \texttt{coordinates} laufen.
 
 \newpage
 \section{Beispiele}
-Die untenstehenden Zahlen, die die Folgen der Schitten bei einer Spielsituation darstellen, stehen für die Eingabeindizes
+Die unten stehenden Zahlen, die die Folgen der Schritten bei einer Spielsituation darstellen, stehen für die Eingabeindizes
 der Batterien in einer Spielsituation. Diese Indizes entsprechen der Reihenfolge der Batterien in der Textdatei. Man fängt mit 0 an,
 diese Zahl entspricht der Startbatterie.\\
-Eine Notation $a(d_a) \rightarrow b(d_b)$ bedeutet, dass man von der Batterie mit dem Eingabeindex $a$ zur Betterie $b$ genau $d_b$ Schritten
+Eine Notation $a(d_a) \rightarrow b(d_b)$ bedeutet, dass man von der Batterie mit dem Eingabeindex $a$ zur Batterie $b$ genau $d_b$ Schritten
 gemacht hat. Das heißt, dass man von der Ladung von $a$ $d_b$ abgezogen hat und die übrige Ladung auf das Feld mit $b$ gestellt hat.\\
 Die Zahl $-1$ steht für ein beliebiges Feld, zu dem man am Ende übergeht, um die restliche Ladung aus der letzten Batterie auszunutzen.
 
@@ -1121,7 +1139,7 @@ Zeit: 16 min 59 s
 
 \subsection{Beispiel 6}\label{example:6}
 Textdatei: \texttt{stromrallye6.txt}\\
-Besonderheit: eine Kopie des Beipsiels \ref{example:3}, aber die Batterie auf dem Feld (6, 2) besitzt eine Ladung von 4\\
+Besonderheit: eine Kopie des Beispiels \ref{example:3}, aber die Batterie auf dem Feld (6, 2) besitzt eine Ladung von 4\\
 
 \noindent
 \fbox{Die Spielsituation ist lösbar.}\\
@@ -1135,7 +1153,7 @@ $0 \rightarrow2(9) \rightarrow 1(9) \rightarrow 3(2) \rightarrow 3(2) \rightarro
 \noindent
 \subsection{Beispiel 7}\label{example:7}
 Textdatei: \texttt{stromrallye7.txt}\\
-Besonderheit: eine Kopie des Beipsiels \ref{example:5} mit einer zusätzlichen Batterie auf dem Feld (2, 16) mit einer Ladung von 1\\
+Besonderheit: eine Kopie des Beispiels \ref{example:5} mit einer zusätzlichen Batterie auf dem Feld (2, 16) mit einer Ladung von 1\\
 
 \noindent
 \fbox{Die Spielsituation ist lösbar.}\\
