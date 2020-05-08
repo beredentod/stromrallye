@@ -1,0 +1,4 @@
+/home/michalboron/C++/BWINF/38_BWINF/BWINF38_2/stromrallye/Aufgabe1/files/qt/build-stromrallye-gui-Desktop-Debug/CMakeFiles/rebuild_cache.dir
+/home/michalboron/C++/BWINF/38_BWINF/BWINF38_2/stromrallye/Aufgabe1/files/qt/build-stromrallye-gui-Desktop-Debug/CMakeFiles/stromrallye-gui.dir
+/home/michalboron/C++/BWINF/38_BWINF/BWINF38_2/stromrallye/Aufgabe1/files/qt/build-stromrallye-gui-Desktop-Debug/CMakeFiles/edit_cache.dir
+/home/michalboron/C++/BWINF/38_BWINF/BWINF38_2/stromrallye/Aufgabe1/files/qt/build-stromrallye-gui-Desktop-Debug/CMakeFiles/stromrallye-gui_autogen.dir
